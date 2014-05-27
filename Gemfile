@@ -4,5 +4,6 @@ source 'https://rubygems.org'
 gemspec
 
 gem "sinatra"
+gem "gush", git: "git@github.com:lonelyplanet/gush.git"
 gem "tilt"
 gem "slim"
