@@ -4,6 +4,7 @@ module Gush
       set :sockets, []
       set :server, :thin
       set :redis, Redis.new(url: Gush.configuration.redis_url)
+      set :pubsub_namespace, "gush"
 
       register Sinatra::PubSub
       register Sinatra::AssetPack
