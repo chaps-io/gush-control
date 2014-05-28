@@ -1,6 +1,13 @@
 module Gush
   module Control
     class App < Sinatra::Base
+      register Sinatra::AssetPack
+
+        assets {
+          serve '/js',     from: 'assets/javascripts'
+          serve '/css',    from: 'assets/stylesheets'
+          serve '/images', from: 'assets/images'
+        }
       get "/" do
         slim :index
       end
