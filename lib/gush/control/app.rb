@@ -8,11 +8,12 @@ module Gush
       register Sinatra::PubSub
       register Sinatra::AssetPack
 
-        assets {
-          serve '/js',     from: 'assets/javascripts'
-          serve '/css',    from: 'assets/stylesheets'
-          serve '/images', from: 'assets/images'
-        }
+      assets {
+        serve '/js',     from: 'assets/javascripts'
+        serve '/css',    from: 'assets/stylesheets'
+        serve '/images', from: 'assets/images'
+      }
+
       get "/" do
         slim :index
       end
