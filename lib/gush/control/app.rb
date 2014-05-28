@@ -1,6 +1,11 @@
 module Gush
   module Control
     class App < Sinatra::Base
+      set :sockets, []
+      set :server, :thin
+      set :redis, Redis.new(url: Gush.configuration.redis_url)
+
+      register Sinatra::PubSub
       register Sinatra::AssetPack
 
         assets {
