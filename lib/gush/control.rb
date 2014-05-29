@@ -10,6 +10,8 @@ require "gush/control/cli_extension"
 
 module Gush
   module Control
-    # Your code goes here...
+    def self.rackup_path
+      Pathname(__FILE__).dirname.parent.parent.join("config.ru")
+    end
   end
 end

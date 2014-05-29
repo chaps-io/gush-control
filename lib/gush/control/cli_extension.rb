@@ -4,7 +4,7 @@ module Gush
     option :port
     def server
       puts "Starting server!"
-      Thin::Runner.new(["start"]).run!
+      Thin::Runner.new(["start", "-R", Gush::Control.rackup_path.to_s]).run!
     end
   end
 end
