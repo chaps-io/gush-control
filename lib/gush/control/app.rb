@@ -31,8 +31,9 @@ module Gush
 
         id = cli.create(workflow)
         cli.start(id)
+        workflow = Gush.find_workflow(id, settings.redis)
         content_type :json
-        {name: workflow, id: id}.to_json
+        {name: workflow.name, finished: 0, status: "Pending", total: workflow.nodes.count, id: id}.to_json
       end
     end
   end

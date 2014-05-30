@@ -5,6 +5,7 @@ html
     script type="text/javascript" src="js/modernizr.js"
     script type="text/javascript" src="js/mustache.min.js"
     script type="text/javascript" src="js/jquery.js"
+    script type="text/javascript" src="js/jquery.watch.min.js"
     script type="text/javascript" src="js/foundation.min.js"
     script type="text/javascript" src="js/gush.js"
     link type="text/css" rel="stylesheet" href="css/normalize.css"
@@ -33,12 +34,19 @@ html
     javascript:
       Foundation.global.namespace = '';
       $(document).foundation();
+    script id="progress-template" type="x-tmpl-mustache"
+      .nice.progress.round
+        span.meter.label style="width: {{progress}}%"
+    script id="status-template" type="x-tmpl-mustache"
+      span class="round label {{class}}"
+        | {{status}}
     script id="workflow-template" type="x-tmpl-mustache"
       tr id="{{id}}" data-finished="{{finished}}" data-total="{{total}}"
         td
           | {{id}}
         td
           | {{name}}
-        td
-          div class="nice progress round"
-            span class="meter label" style="width: {{progress}}%"
+        td.progress-container
+          | {{> progress}}
+        td.status
+          | {{> status}}
