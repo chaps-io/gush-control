@@ -3,6 +3,7 @@ html
   head
     title Gush control
     script type="text/javascript" src="js/modernizr.js"
+    script type="text/javascript" src="js/mustache.min.js"
     script type="text/javascript" src="js/jquery.js"
     script type="text/javascript" src="js/foundation.min.js"
     script type="text/javascript" src="js/gush.js"
@@ -32,3 +33,12 @@ html
     javascript:
       Foundation.global.namespace = '';
       $(document).foundation();
+    script id="workflow-template" type="x-tmpl-mustache"
+      tr id="{{id}}" data-finished="{{finished}}" data-total="{{total}}"
+        td
+          | {{id}}
+        td
+          | {{name}}
+        td
+          div class="nice progress round"
+            span class="meter label" style="width: {{progress}}%"
