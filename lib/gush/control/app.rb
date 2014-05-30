@@ -26,6 +26,25 @@ module Gush
         slim :index
       end
 
+      get "/show/:workflow" do |id|
+        @workflow = Gush.find_workflow(id, settings.redis)
+        @links = []
+        @workflow.nodes.each do |node|
+          if node.incoming.empty?
+            @links << {source: "Start", target: node.class.to_s, type: "flow"}
+          end
+
+          node.outgoing.each do |out|
+            @links << {source: node.class.to_s, target: out, type: "flow"}
+          end
+
+         if node.outgoing.empty?
+            @links << {source: node.class.to_s, target: "End", type: "flow"}
+          end
+        end
+        slim :show
+      end
+
       post "/run/:workflow" do |workflow|
         cli = Gush::CLI.new
 

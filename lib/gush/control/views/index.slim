@@ -10,7 +10,8 @@ table.workflows
   tbody
     - @workflows.each do |workflow|
       tr
-        td = workflow.name
+        td
+          a href="/show/#{workflow.name}" = workflow.name
         td = workflow.class
         td
           - finished = workflow.nodes.count {|job| job.finished }
