@@ -1,3 +1,31 @@
+classes = %w{FetchA Middle FetchB PersistA PersistB Normalize}
+
+classes.each do |name|
+  eval <<-CODE
+    class #{name} < Gush::Job
+      def work
+        raise "fail" if #{name} == Normalize
+        sleep rand(0.5..5)
+      end
+    end
+  CODE
+end
+
+class Workflow < Gush::Workflow
+  def configure
+    run FetchA
+    run FetchB
+
+    run Middle,
+      after: [FetchA, FetchB],
+      before: [PersistA, PersistB]
+
+    run PersistA
+    run PersistB
+    run Normalize, after: [PersistA, PersistB]
+  end
+end
+
 module Gush
   module Control
     class App < Sinatra::Base
