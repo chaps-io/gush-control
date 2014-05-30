@@ -1,3 +1,26 @@
-script type="text/javascript" src="js/jquery.js"
-script type="text/javascript" src="js/gush.js"
-p Hello world
+h1 Registered workflows
+
+table.workflows
+  thead
+    th ID
+    th Name
+    th Status
+
+  tbody
+    - @workflows.each do |workflow|
+      tr
+        td = workflow.name
+        td = workflow.class
+        td
+          - if workflow.failed?
+            span.round.alert.label Failed
+          - elsif workflow.running?
+            br
+            - finished = workflow.nodes.count {|job| job.finished }
+            - total = workflow.nodes.count
+            .nice.progress.round
+              span.meter.label style="width: #{(finished*100)/total}%"
+          - elsif workflow.finished?
+            span.round.success.label Finished
+          - else
+            span.round.secondary.label Pending

@@ -16,6 +16,13 @@ module Gush
       }
 
       get "/" do
+        @cli = Gush::CLI.new
+
+        keys = settings.redis.keys("gush.workflows.*")
+        @workflows = keys.map do |key|
+          id = key.sub("gush.workflows.", "")
+          Gush.find_workflow(id, settings.redis)
+        end
         slim :index
       end
 

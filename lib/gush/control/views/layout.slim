@@ -1,0 +1,34 @@
+doctype html
+html
+  head
+    title Gush control
+    script type="text/javascript" src="js/modernizr.js"
+    script type="text/javascript" src="js/jquery.js"
+    script type="text/javascript" src="js/foundation.min.js"
+    script type="text/javascript" src="js/gush.js"
+    link type="text/css" rel="stylesheet" href="css/normalize.css"
+    link type="text/css" rel="stylesheet" href="css/foundation.min.css"
+    link type="text/css" rel="stylesheet" href="css/app.css"
+  body
+    nav class="top-bar fixed" data-topbar=true
+      ul class="title-area"
+        li class="name"
+          h1
+            a href="/" Gush
+        li class="toggle-topbar menu-icon"
+          a href="#"
+            span Menu
+
+      section class="top-bar-section"
+        ul class="left"
+          li class="has-dropdown"
+            a href="#" New workflow
+            ul class="dropdown"
+              li
+                a href="#" First link in dropdown
+    .row
+      .large-12.columns
+        == yield
+    javascript:
+      Foundation.global.namespace = '';
+      $(document).foundation();
