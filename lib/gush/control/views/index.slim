@@ -4,6 +4,7 @@ table.workflows
   thead
     th ID
     th Name
+    th Progress
     th Status
 
   tbody
@@ -12,14 +13,15 @@ table.workflows
         td = workflow.name
         td = workflow.class
         td
+          - finished = workflow.nodes.count {|job| job.finished }
+          - total = workflow.nodes.count
+          .nice.progress.round
+            span.meter.label style="width: #{(finished*100)/total}%"
+        td
           - if workflow.failed?
             span.round.alert.label Failed
           - elsif workflow.running?
-            br
-            - finished = workflow.nodes.count {|job| job.finished }
-            - total = workflow.nodes.count
-            .nice.progress.round
-              span.meter.label style="width: #{(finished*100)/total}%"
+            span.round.label Running
           - elsif workflow.finished?
             span.round.success.label Finished
           - else
