@@ -32,9 +32,7 @@ module Gush
       set :sockets, []
       set :server, :thin
       set :redis, Redis.new(url: Gush.configuration.redis_url)
-      set :pubsub_namespace, "gush"
 
-      register Sinatra::PubSub
       register Sinatra::AssetPack
 
       assets {
@@ -52,6 +50,17 @@ module Gush
           Gush.find_workflow(id, settings.redis)
         end
         slim :index
+      end
+
+      get '/subscribe/workers.status', provides: 'text/event-stream' do
+        stream :keep_open do |out|
+          redis = Redis.new(url: Gush.configuration.redis_url)
+          redis.subscribe("gush.workers.status") do |on|
+            on.message do |channel, msg|
+              out << "data: #{msg}\n\n"
+            end
+          end
+        end
       end
 
       get "/show/:workflow" do |id|
@@ -86,7 +95,7 @@ module Gush
         cli.start(id)
         workflow = Gush.find_workflow(id, settings.redis)
         content_type :json
-        {name: workflow.name, finished: 0, status: "Pending", total: workflow.nodes.count, id: id}.to_json
+        {name: workflow.class.to_s, finished: 0, status: "Pending", total: workflow.nodes.count, id: id}.to_json
       end
     end
   end
