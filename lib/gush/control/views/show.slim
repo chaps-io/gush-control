@@ -1,6 +1,20 @@
-h1 = @workflow.class
-
-#canvas-svg
+.row
+  .large-12.columns
+    h1
+      = @workflow.class
+      '
+      small = @workflow.name
+.row
+  .large-12.columns
+    h2 Flow graph
+    svg#canvas-svg width="100%" height="900"
+      g class="viewport"
+.row
+  .large-12.columns
+    h2 Jobs
+    ul
+      - @workflow.nodes.each do |node|
+        li = node.class.to_s
 
 script
   == "var nodes = #{JSON.dump(@nodes)};"
@@ -9,117 +23,93 @@ script
 javascript:
 
 
-  var WIDTH = 1800, HEIGHT = 900;
+  var g = new dagreD3.Digraph();
+  nodes.forEach(function(node) {
+    g.addNode(node.name, { finished: node.finished, failed: node.failed, running: node.running, label: node.name });
+  });
 
-  var drawD3Document = function(nodes, links) {
-      links.forEach(function(link) {
-          link.source = nodes[link.source];
-          link.target = nodes[link.target];
-      });
+  links.forEach(function (edge) {
+    g.addEdge(null, edge.source, edge.target);
+  });
 
+  var renderer = new dagreD3.Renderer();
+  var layout = dagreD3.layout()
+                    .nodeSep(20)
+                    .rankDir("LR");
+  var oldDrawNodes = renderer.drawNodes();
+  renderer.drawNodes(function(graph, root) {
+    var svgNodes = oldDrawNodes(graph, root);
+    svgNodes.attr("class", function(name) {
+      var node = g.node(name);
+      var classes = "node " + name.toLowerCase();
+      if (node.finished)
+        classes += " status-finished";
+      if (node.failed)
+        classes += " status-failed";
+      if (node.running)
+        classes += " status-running";
+      return classes;
+    });
+    return svgNodes;
+  })
+  .layout(layout)
+  .run(g, d3.select("svg g"));
 
-      var zoom = d3.behavior.zoom().on("zoom", zoomed);
-
-      function zoomed() {
-        svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-      }
-
-      var width = WIDTH, height = HEIGHT;
-      var force = d3.layout.force()
-          .nodes(d3.values(nodes))
-          .links(links).size([ width, height ])
-          .linkDistance(100)
-          .friction(0.7)
-          .gravity(0.2)
-          .theta(0.5)
-          .charge(-1500).on("tick", tick).start();
-      var svg = d3.select("#canvas-svg")
-          .append("svg").attr("width", width).call(zoom).attr("height", height);
-      svg.append("svg:defs").selectAll("marker")
-          .data([ "end" ]).enter()
-          .append("svg:marker").attr("id", String)
-          .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 15).attr("refY", -1.5)
-          .attr("markerWidth", 6).attr("markerHeight", 6)
-          .attr("orient", "auto").append("svg:path")
-          .attr("d", "M0,-5L10,0L0,5");
-
-      var path = svg.append("g").selectAll("path")
-          .data(force.links())
-          .enter()
-          .append("g")
-          .attr("class", "link-group")
-          .append("path")
-              .attr("class", "link")
-              .attr("id", function(d, i) { return "link" + i;})
-              .attr("marker-end", "url(#end)");
-
-      svg.selectAll(".link-group").append("text")
-          .attr("dy", "-0.5em")
-          .append("textPath")
-          .attr("startOffset",function(d,i){return 8/20;})
-          .attr("xlink:href",function(d,i){return "#link"+i;});
-
-      var node = svg.selectAll(".node")
-          .data(force.nodes())
-          .enter().append("g")
-          .attr("class", function(d) {
-            var classes = "node " + d.name.toLowerCase();
-            if (d.finished === true)
-              classes += " finished";
-            return classes;
-          })
-          .call(force.drag);
-      node.append("circle")
-          .attr("r", 10);
-      node.append("text")
-          .attr("text-anchor", "middle")
-          .attr("dy", 30).text(function(d) {
-          console.log(JSON.stringify(d));
-          return d.name;
-      });
-      function tick() {
-          path.attr("d", function(d) {
-              return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
-          });
-          node.attr("transform", function(d) {
-              return "translate(" + d.x + "," + d.y + ")";
-          });
-      }
-  };
-
-  drawD3Document(nodes, links);
-
+  var svg = svgPanZoom('#canvas-svg', {
+    panEnabled: true,
+    minZoom: 1,
+    maxZoom: 10,
+    zoomEnabled: true,
+    center: false,
+    fit: true
+  });
 css:
-  .link {
-    fill: none;
-    stroke: #666;
+  svg {
+    overflow: hidden;
+  }
+
+  text {
+    font-weight: 300;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+    font-size: 14px;
+  }
+
+  .node rect {
     stroke-width: 2px;
-  }
-
-  circle {
-    fill: #ccc;
     stroke: #333;
-    stroke-width: 1.5px;
+    fill: #fff;
   }
 
-  .node.start circle {
-    fill: #CFF09E;
+  .node.start rect, .node.failed rect {
+    fill: #f77;
   }
 
-  .node.end circle {
-    fill: #F56991;
+  .node.end rect {
+    fill: #7f7;
   }
 
-  .node.finished circle {
-    fill: green;
-  }
-
-  .node.failed circle {
+  .node.status-finished.status-failed rect {
     fill: red;
   }
-  text {
-    font: 14px sans-serif;
-    pointer-events: none;
-    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+
+  .node.status-finished.status-failed text {
+    color: white;
+  }
+
+  .node.status-finished rect {
+    fill: #7f7;
+  }
+
+  .node.status-running rect {
+    fill: yellow;
+  }
+
+  .edgeLabel rect {
+    fill: #fff;
+  }
+
+  .edgePath path {
+    stroke: #333;
+    stroke-width: 1.5px;
+    fill: none;
   }

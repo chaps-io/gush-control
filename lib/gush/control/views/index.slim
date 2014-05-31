@@ -1,29 +1,31 @@
-h1 Registered workflows
+.row
+  .large-12.columns
+    h1 Registered workflows
 
-table.workflows
-  thead
-    th ID
-    th Name
-    th Progress
-    th Status
+    table.workflows
+      thead
+        th ID
+        th Name
+        th Progress
+        th Status
 
-  tbody
-    - @workflows.each do |workflow|
-      tr id=workflow.name
-        td
-          a href="/show/#{workflow.name}" = workflow.name
-        td = workflow.class
-        td
-          - finished = workflow.nodes.count {|job| job.finished }
-          - total = workflow.nodes.count
-          .nice.progress.round
-            span.meter.label style="width: #{(finished*100)/total}%"
-        td
-          - if workflow.failed?
-            span.round.alert.label Failed
-          - elsif workflow.running?
-            span.round.label Running
-          - elsif workflow.finished?
-            span.round.success.label Finished
-          - else
-            span.round.secondary.label Pending
+      tbody
+        - @workflows.each do |workflow|
+          tr id=workflow.name
+            td
+              a href="/show/#{workflow.name}" = workflow.name
+            td = workflow.class
+            td
+              - finished = workflow.nodes.count {|job| job.finished }
+              - total = workflow.nodes.count
+              .nice.progress.round
+                span.meter.label style="width: #{(finished*100)/total}%"
+            td
+              - if workflow.failed?
+                span.round.alert.label Failed
+              - elsif workflow.running?
+                span.round.label Running
+              - elsif workflow.finished?
+                span.round.success.label Finished
+              - else
+                span.round.secondary.label Pending

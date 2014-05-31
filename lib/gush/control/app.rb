@@ -58,29 +58,22 @@ module Gush
         @workflow = Gush.find_workflow(id, settings.redis)
         @links = []
         @nodes = []
-        i = 1
         @nodes << {index: 0, x: 20, y: 250,  weight: 10, name: "Start"}
         @nodes << {index: 1, x: 840, y: 250, weight: 10, name: "End"}
 
-        node_map = Hash[@workflow.nodes.map do |node|
-          i += 1
-          @nodes << {index: i, x: 0, y: 0, name: node.class.to_s, running: node.running?, finished: node.finished?, failed: node.failed?}
-          [node.class.to_s, i]
-        end]
-
 
         @workflow.nodes.each do |node|
-          index = node_map[node.class.to_s]
+          name = node.class.to_s
           if node.incoming.empty?
-            @links << {source: 0, target: index, type: "flow"}
+            @links << {source: "Start", target: name, type: "flow"}
           end
 
           node.outgoing.each do |out|
-            @links << {source: index, target: node_map[out], type: "flow"}
+            @links << {source: name, target: out, type: "flow"}
           end
 
          if node.outgoing.empty?
-            @links << {source: index, target: 1, type: "flow"}
+            @links << {source: name, target: "End", type: "flow"}
           end
         end
         slim :show

@@ -8,6 +8,8 @@ html
     script type="text/javascript" src="/js/jquery.watch.min.js"
     script type="text/javascript" src="/js/foundation.min.js"
     script type="text/javascript" src="/js/d3.min.js"
+    script type="text/javascript" src="/js/svg-pan-zoom.min.js"
+    script type="text/javascript" src="/js/dagre-d3.min.js"
     script type="text/javascript" src="/js/gush.js"
     link type="text/css" rel="stylesheet" href="/css/normalize.css"
     link type="text/css" rel="stylesheet" href="/css/foundation.min.css"
@@ -29,9 +31,7 @@ html
             ul class="dropdown"
               li
                 a href="#" First link in dropdown
-    .row
-      .large-12.columns
-        == yield
+    == yield
     javascript:
       Foundation.global.namespace = '';
       $(document).foundation();
