@@ -3,22 +3,18 @@ h1 = @workflow.class
 #canvas-svg
 
 script
+  == "var nodes = #{JSON.dump(@nodes)};"
   == "var links = #{JSON.dump(@links)};"
 
 javascript:
 
 
-  var WIDTH = 900, HEIGHT = 500;
+  var WIDTH = 1800, HEIGHT = 900;
 
-  var drawD3Document = function(links) {
-      var nodes = {};
+  var drawD3Document = function(nodes, links) {
       links.forEach(function(link) {
-          link.source = nodes[link.source] || (nodes[link.source] = {
-              name: link.source
-          });
-          link.target = nodes[link.target] || (nodes[link.target] = {
-              name: link.target
-          });
+          link.source = nodes[link.source];
+          link.target = nodes[link.target];
       });
 
 
@@ -33,9 +29,10 @@ javascript:
           .nodes(d3.values(nodes))
           .links(links).size([ width, height ])
           .linkDistance(100)
-          .friction(0.8)
-          .gravity(0)
-          .charge(-150).on("tick", tick).start();
+          .friction(0.7)
+          .gravity(0.2)
+          .theta(0.5)
+          .charge(-1500).on("tick", tick).start();
       var svg = d3.select("#canvas-svg")
           .append("svg").attr("width", width).call(zoom).attr("height", height);
       svg.append("svg:defs").selectAll("marker")
@@ -61,25 +58,29 @@ javascript:
           .attr("dy", "-0.5em")
           .append("textPath")
           .attr("startOffset",function(d,i){return 8/20;})
-          .attr("xlink:href",function(d,i){return "#link"+i;})
-          .text(function(d) { return d.value; })
-          ;
+          .attr("xlink:href",function(d,i){return "#link"+i;});
 
       var node = svg.selectAll(".node")
           .data(force.nodes())
           .enter().append("g")
-          .attr("class", "node").call(force.drag);
+          .attr("class", function(d) {
+            var classes = "node " + d.name.toLowerCase();
+            if (d.finished === true)
+              classes += " finished";
+            return classes;
+          })
+          .call(force.drag);
       node.append("circle")
-          .attr("r", 6);
+          .attr("r", 10);
       node.append("text")
-          .attr("x", 12)
-          .attr("dy", ".35em").text(function(d) {
+          .attr("text-anchor", "middle")
+          .attr("dy", 30).text(function(d) {
+          console.log(JSON.stringify(d));
           return d.name;
       });
       function tick() {
           path.attr("d", function(d) {
-              var dx = d.target.x - d.source.x, dy = d.target.y - d.source.y, dr = Math.sqrt(dx * dx + dy * dy);
-              return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+              return "M" + d.source.x + "," + d.source.y + "L" + d.target.x + "," + d.target.y;
           });
           node.attr("transform", function(d) {
               return "translate(" + d.x + "," + d.y + ")";
@@ -87,7 +88,7 @@ javascript:
       }
   };
 
-  drawD3Document(links);
+  drawD3Document(nodes, links);
 
 css:
   .link {
@@ -102,8 +103,23 @@ css:
     stroke-width: 1.5px;
   }
 
+  .node.start circle {
+    fill: #CFF09E;
+  }
+
+  .node.end circle {
+    fill: #F56991;
+  }
+
+  .node.finished circle {
+    fill: green;
+  }
+
+  .node.failed circle {
+    fill: red;
+  }
   text {
-    font: 10px sans-serif;
+    font: 14px sans-serif;
     pointer-events: none;
     text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
   }
