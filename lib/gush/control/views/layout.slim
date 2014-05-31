@@ -44,7 +44,8 @@ html
     script id="workflow-template" type="x-tmpl-mustache"
       tr id="{{id}}" data-finished="{{finished}}" data-total="{{total}}"
         td
-          | {{id}}
+          a href="/show/{{id}}"
+            | {{id}}
         td
           | {{name}}
         td.progress-container
