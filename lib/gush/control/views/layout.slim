@@ -32,6 +32,10 @@ html
                 li
                   a.create-workflow data-workflow-class=workflow href="javascript:void(0);" = workflow
     == yield
+    #modalBox.reveal-modal.text-center data-reveal="data-reval" data-reveal-id="modalBox"
+      .data
+      a.close-reveal-modal &#215;
+
     javascript:
       Foundation.global.namespace = '';
       $(document).foundation();
