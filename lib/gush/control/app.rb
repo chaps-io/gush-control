@@ -46,10 +46,10 @@ module Gush
         slim :index
       end
 
-      get '/subscribe/workers.status', provides: 'text/event-stream' do
+      get '/subscribe/?:channel', provides: 'text/event-stream' do |channel|
         stream :keep_open do |out|
           redis = Redis.new(url: Gush.configuration.redis_url)
-          redis.subscribe("gush.workers.status") do |on|
+          redis.subscribe("gush.#{channel}") do |on|
             on.message do |channel, msg|
               if out.closed?
                 redis.unsubscribe
