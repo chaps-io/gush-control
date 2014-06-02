@@ -56,6 +56,13 @@ html
           | {{> progress}}
         td.status
           | {{> status}}
+        td
+          | {{> action}}
+
+
+    script id="workflow-action-template" type="x-tmpl-mustache"
+      a class="button small round start-workflow {{classes}}" data-action="{{action}}" data-workflow-id="{{workflow_id}}"
+        | {{description}}
 
     script id="node-template" type="x-tmpl-mustache"
       tr
