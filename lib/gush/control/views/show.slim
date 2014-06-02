@@ -14,9 +14,11 @@
 .row
   .large-12.columns
     h2 Jobs
-    ul
-      - @workflow.nodes.each do |node|
-        li = node.class.to_s
+    table.nodes
+      thead
+        th Name
+        th Status
+      tbody
 
 script
   == "var nodes = #{JSON.dump(@nodes)};"
