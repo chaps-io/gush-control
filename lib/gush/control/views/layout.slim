@@ -4,6 +4,7 @@ html
     title Gush control
     script type="text/javascript" src="/js/modernizr.js"
     script type="text/javascript" src="/js/mustache.min.js"
+    script type="text/javascript" src="/js/moment.js"
     script type="text/javascript" src="/js/jquery.js"
     script type="text/javascript" src="/js/foundation.min.js"
     script type="text/javascript" src="/js/d3.min.js"
@@ -60,6 +61,14 @@ html
           | {{started_at}}
         td.finished_at
           | {{finished_at}}
+        td
+          | {{> action}}
+
+
+    script id="workflow-action-template" type="x-tmpl-mustache"
+      a class="button small round start-workflow {{classes}}" data-action="{{action}}" data-workflow-id="{{workflow_id}}"
+        | {{description}}
+
     script id="node-template" type="x-tmpl-mustache"
       tr
         td
