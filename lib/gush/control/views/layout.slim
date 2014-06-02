@@ -28,6 +28,9 @@ html
           li class="has-dropdown"
             a href="#" Create workflow
             ul class="dropdown"
+              - Gush::Workflow.descendants.each do |workflow|
+                li
+                  a.create-workflow data-workflow-class=workflow href="javascript:void(0);" = workflow
     == yield
     javascript:
       Foundation.global.namespace = '';

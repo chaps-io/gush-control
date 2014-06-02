@@ -91,17 +91,16 @@ module Gush
       post "/start/:workflow" do |workflow|
         Gush.start_workflow(workflow, redis: settings.redis)
         content_type :json
-        {status: 'ok'}.to_json
+        workflow.to_json
       end
 
       post "/create/:workflow" do |workflow|
         cli = Gush::CLI.new
 
         id = cli.create(workflow)
-        cli.start(id)
         workflow = Gush.find_workflow(id, settings.redis)
         content_type :json
-        {name: workflow.class.to_s, finished: 0, status: "Pending", total: workflow.nodes.count, id: id}.to_json
+        workflow.to_json
       end
     end
   end
