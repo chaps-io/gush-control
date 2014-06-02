@@ -57,6 +57,10 @@ module Gush
           redis = Redis.new(url: Gush.configuration.redis_url)
           redis.subscribe("gush.workers.status") do |on|
             on.message do |channel, msg|
+              if out.closed?
+                redis.unsubscribe
+                next
+              end
               out << "data: #{msg}\n\n"
             end
           end
@@ -67,12 +71,14 @@ module Gush
         @workflow = Gush.find_workflow(id, settings.redis)
         @links = []
         @nodes = []
-        @nodes << {index: 0, x: 20, y: 250,  weight: 10, name: "Start"}
-        @nodes << {index: 1, x: 840, y: 250, weight: 10, name: "End"}
+        @nodes << {name: "Start"}
+        @nodes << {name: "End"}
 
 
         @workflow.nodes.each do |node|
           name = node.class.to_s
+          @nodes << {name: name, finished: node.finished?, running: node.running?, failed: node.failed?}
+
           if node.incoming.empty?
             @links << {source: "Start", target: name, type: "flow"}
           end
@@ -88,7 +94,13 @@ module Gush
         slim :show
       end
 
-      post "/run/:workflow" do |workflow|
+      post "/start/:workflow" do |workflow|
+        Gush.start_workflow(workflow, redis: settings.redis)
+        content_type :json
+        {status: 'ok'}.to_json
+      end
+
+      post "/create/:workflow" do |workflow|
         cli = Gush::CLI.new
 
         id = cli.create(workflow)
