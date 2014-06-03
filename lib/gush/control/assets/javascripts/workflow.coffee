@@ -31,6 +31,13 @@ class @Workflow
     @data.status = status
     @view.updateStatus(status) if @view
 
+  updateDates: (data) ->
+    @data.started_at = data.started_at
+    @data.finished_at = data.finished_at
+
+    @templateData()
+    @view.updateDates(@data) if @view
+
   markAsCompleted: ->
     @changeStatus("Finished")
 

@@ -8,7 +8,11 @@ class @View
     Mustache.render(@template, @params, @partials())
 
   updateStatus: (status) ->
-    this.partialsData.status = status;
+    @partialsData.status = status
+
+  updateDates: (data) ->
+    @params.started_at = data.started_at
+    @params.finished_at = data.finished_at
 
   updateProgress: (progress) ->
     @partialsData.progress = progress

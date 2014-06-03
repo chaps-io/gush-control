@@ -93,9 +93,12 @@ class @Gush
         console.error("Unkown job status:", message.status, "data: ", message)
 
   _onWorkflowStatusChange: (message) =>
-    message = JSON.parse(message.data);
+    message = JSON.parse(message.data)
+    workflow = @workflows[message.workflow_id]
 
-    @workflows[message.workflow_id].changeStatus(message.status);
+    workflow.changeStatus(message.status)
+    workflow.updateDates(message)
+    $("table.workflows").find("##{message.workflow_id}").replaceWith(workflow.render())
 
   _onJobStart: (message) =>
     @_markGraphNode(message.workflow_id, message.job, 'status-running')
