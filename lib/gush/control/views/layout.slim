@@ -12,6 +12,11 @@ html
     script type="text/javascript" src="/js/vendor/svg-pan-zoom.min.js"
     script type="text/javascript" src="/js/vendor/dagre-d3.min.js"
     script type="text/javascript" src="/js/gush.js"
+    script type="text/javascript" src="/js/job.js"
+    script type="text/javascript" src="/js/workflow.js"
+    script type="text/javascript" src="/js/templates.js"
+    script type="text/javascript" src="/js/view.js"
+    script type="text/javascript" src="/js/application.js"
     link type="text/css" rel="stylesheet" href="/css/normalize.css"
     link type="text/css" rel="stylesheet" href="/css/foundation.min.css"
     link type="text/css" rel="stylesheet" href="/css/app.css"
@@ -38,9 +43,6 @@ html
       .data
       a.close-reveal-modal &#215;
 
-    javascript:
-      Foundation.global.namespace = '';
-      $(document).foundation();
     script id="progress-template" type="x-tmpl-mustache"
       .nice.progress.round
         span.meter.label style="width: {{progress}}%"
