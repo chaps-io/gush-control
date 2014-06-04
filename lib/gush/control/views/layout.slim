@@ -13,6 +13,7 @@ html
     script type="text/javascript" src="/js/vendor/dagre-d3.min.js"
     script type="text/javascript" src="/js/gush.js"
     script type="text/javascript" src="/js/job.js"
+    script type="text/javascript" src="/js/machine.js"
     script type="text/javascript" src="/js/workflow.js"
     script type="text/javascript" src="/js/templates.js"
     script type="text/javascript" src="/js/view.js"
@@ -82,3 +83,13 @@ html
           | {{started_at}}
         td
           | {{finished_at}}
+    script id="machine-template" type="x-tmpl-mustache"
+      tr data-pid="{{pid}}"
+        td
+          | {{pid}}
+        td
+          | {{host}}
+        td
+          | {{jobs}}
+        td
+          | {{status}}

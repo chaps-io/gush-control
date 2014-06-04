@@ -1,6 +1,7 @@
 require "pathname"
 require "thin"
 require "sinatra"
+require "coffee-script"
 require "slim"
 require "gush"
 require "sinatra/pubsub"

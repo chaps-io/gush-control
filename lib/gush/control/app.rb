@@ -61,6 +61,19 @@ module Gush
         end
       end
 
+      get "/workers", provides: "text/event-stream" do
+        require "sidekiq/api"
+        ps = Sidekiq::ProcessSet.new
+
+        stream :keep_open do |out|
+          loop do
+            data = ps.map{|process| {host: process["hostname"], pid: process["pid"], jobs: process["busy"] } }
+            out << "data: #{data.to_json}\n\n"
+            sleep 5
+          end
+        end
+      end
+
       get "/show/:workflow" do |id|
         @workflow = Gush.find_workflow(id, settings.redis)
         @links = []

@@ -1,6 +1,7 @@
 class @Gush
   constructor: ->
     @workflows = {}
+    @machines = {}
 
   initialize: ->
     @registerSockets()
@@ -10,6 +11,7 @@ class @Gush
   registerSockets: ->
     @registerWorkersSocket()
     @registerWorkflowsSocket()
+    @registerMachinesSocket()
 
   displayCurrentWorkflows: ->
     $("table.workflows tbody").empty()
@@ -25,18 +27,27 @@ class @Gush
   registerWorkersSocket: ->
     workersSocket = new EventSource("/subscribe/workers.status");
 
-    workersSocket.onopen    = this._onOpen;
-    workersSocket.onerror   = this._onError;
-    workersSocket.onmessage = this._onStatus;
-    workersSocket.onclose   = this._onClose;
+    workersSocket.onopen    = @_onOpen
+    workersSocket.onerror   = @_onError
+    workersSocket.onmessage = @_onStatus
+    workersSocket.onclose   = @_onClose
 
   registerWorkflowsSocket: ->
     workflowsSocket = new EventSource("/subscribe/workflows.status");
 
-    workflowsSocket.onopen    = this._onOpen;
-    workflowsSocket.onerror   = this._onError;
-    workflowsSocket.onmessage = this._onWorkflowStatusChange;
-    workflowsSocket.onclose   = this._onClose;
+    workflowsSocket.onopen    = @_onOpen
+    workflowsSocket.onerror   = @_onError
+    workflowsSocket.onmessage = @_onWorkflowStatusChange
+    workflowsSocket.onclose   = @_onClose
+
+  registerMachinesSocket: ->
+    machinesSocket = new EventSource("/workers")
+
+    machinesSocket.onopen    = @_onOpen
+    machinesSocket.onerror   = @_onError
+    machinesSocket.onmessage = @_onMachineStatusMessage
+
+    machinesSocket.onclose   = @_onClose
 
   startWorkflow: (workflow, el) ->
     $.ajax
@@ -99,6 +110,13 @@ class @Gush
     workflow.changeStatus(message.status)
     workflow.updateDates(message)
     $("table.workflows").find("##{message.workflow_id}").replaceWith(workflow.render())
+
+  _onMachineStatusMessage: (message) =>
+      message = JSON.parse(message.data)
+      message.each (machine) =>
+        machine = @machines[message.id] ||= new Machine(machine, $("table.machines tbody"))
+        machine.markAsAlive()
+        machine.render()
 
   _onJobStart: (message) =>
     @_markGraphNode(message.workflow_id, message.job, 'status-running')
