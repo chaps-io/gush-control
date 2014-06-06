@@ -4,6 +4,7 @@ class @Workflow
     @view = new View(@template, @templateData(), @partialsData())
 
   render: ->
+    @view.setPartialsData(@partialsData())
     @view.render()
 
   templateData: ->
