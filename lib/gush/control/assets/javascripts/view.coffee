@@ -4,6 +4,8 @@ class @View
   partials: ->
     {progress: @_progressTemplate(), status: @_statusTemplate(), action: @_actionTemplate() }
 
+  setPartialsData: (@partialsData) ->
+
   render: ->
     Mustache.render(@template, @params, @partials())
 
