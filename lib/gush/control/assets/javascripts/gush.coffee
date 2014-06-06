@@ -25,7 +25,7 @@ class @Gush
         $("table.nodes tbody").append(job.render())
 
   registerWorkersSocket: ->
-    workersSocket = new EventSource("/subscribe/workers.status");
+    workersSocket = new EventSource("/subscribe/workers.status")
 
     workersSocket.onopen    = @_onOpen
     workersSocket.onerror   = @_onError
@@ -33,7 +33,7 @@ class @Gush
     workersSocket.onclose   = @_onClose
 
   registerWorkflowsSocket: ->
-    workflowsSocket = new EventSource("/subscribe/workflows.status");
+    workflowsSocket = new EventSource("/subscribe/workflows.status")
 
     workflowsSocket.onopen    = @_onOpen
     workflowsSocket.onerror   = @_onError
@@ -106,10 +106,10 @@ class @Gush
   _onWorkflowStatusChange: (message) =>
     message = JSON.parse(message.data)
     workflow = @workflows[message.workflow_id]
-
-    workflow.changeStatus(message.status)
-    workflow.updateDates(message)
-    $("table.workflows").find("##{message.workflow_id}").replaceWith(workflow.render())
+    if workflow
+      workflow.changeStatus(message.status)
+      workflow.updateDates(message)
+      $("table.workflows").find("##{message.workflow_id}").replaceWith(workflow.render())
 
   _onMachineStatusMessage: (message) =>
       message = JSON.parse(message.data)
