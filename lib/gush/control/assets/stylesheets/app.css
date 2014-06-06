@@ -1,3 +1,53 @@
 table.workflows {
   width: 100%;
 }
+
+svg {
+  overflow: hidden;
+}
+
+text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+  font-size: 14px;
+}
+
+.node rect {
+  stroke-width: 2px;
+  stroke: #333;
+  fill: #fff;
+}
+
+.node.start rect, .node.failed rect {
+  fill: #f77;
+}
+
+.node.end rect {
+  fill: #7f7;
+}
+
+.node.status-finished.status-failed rect {
+  fill: red;
+}
+
+.node.status-finished.status-failed text {
+  color: white;
+}
+
+.node.status-finished rect {
+  fill: #7f7;
+}
+
+.node.status-running rect {
+  fill: yellow;
+}
+
+.edgeLabel rect {
+  fill: #fff;
+}
+
+.edgePath path {
+  stroke: #333;
+  stroke-width: 1.5px;
+  fill: none;
+}
