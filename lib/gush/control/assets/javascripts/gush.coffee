@@ -90,7 +90,7 @@ class @Gush
 
   _onStatus: (message) =>
     message = JSON.parse(message.data)
-
+    console.log(message)
     switch message.status
       when "started"
         @_onJobStart(message)
@@ -119,10 +119,10 @@ class @Gush
         machine.render()
 
   _onJobStart: (message) =>
-    @_markGraphNode(message.workflow_id, message.job, 'status-running')
+    @_markGraphNode(message.job, 'status-running')
 
   _onJobSuccess: (message) =>
-    @_markGraphNode(message.workflow_id, message.job, 'status-finished')
+    @_markGraphNode(message.job, 'status-finished')
 
     workflow = @workflows[message.workflow_id]
     if workflow
@@ -132,7 +132,7 @@ class @Gush
   _onJobHeartbeat: (message) =>
 
   _onJobFail: (message) =>
-    @_markGraphNode(message.workflow_id, message.job, 'status-finished status-failed')
+    @_markGraphNode(message.job, 'status-finished status-failed')
 
     workflow = @workflows[message.workflow_id]
     workflow.markAsFailed();
@@ -144,5 +144,7 @@ class @Gush
 
     $("table.workflows").append(workflow.render())
 
-  _markGraphNode: ->
+  _markGraphNode: (name, classes) ->
+    graph = new Graph("canvas-svg")
+    graph.markNode(name, classes)
 

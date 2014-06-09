@@ -16,7 +16,7 @@ class @Graph
 
   render: ->
     renderer = new dagreD3.Renderer
-    layout = dagreD3.layout().nodeSep(20).rankDir("LR");
+    layout = dagreD3.layout().nodeSep(50).rankDir("LR");
     oldDrawNodes = renderer.drawNodes()
 
     renderer.drawNodes (graph, root) =>
@@ -45,3 +45,8 @@ class @Graph
       zoomEnabled: true,
       center: false,
       fit: true
+
+  markNode: (name, class_names) ->
+   name = name.replace(/::/g, '_').toLowerCase()
+   $("svg#{@canvas} .node.#{name}")
+     .attr('class', "node #{name} #{class_names}")

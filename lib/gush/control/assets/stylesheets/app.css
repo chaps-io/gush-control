@@ -2,9 +2,6 @@ table.workflows {
   width: 100%;
 }
 
-svg {
-  overflow: hidden;
-}
 
 text {
   font-weight: 300;
@@ -13,13 +10,17 @@ text {
 }
 
 .node rect {
-  stroke-width: 2px;
+  stroke-width: 1.5px;
   stroke: #333;
   fill: #fff;
 }
 
-.node.start rect, .node.failed rect {
+.node.start rect {
   fill: #f77;
+}
+
+.node.failed rect {
+  stroke: #f77;
 }
 
 .node.end rect {
@@ -27,18 +28,21 @@ text {
 }
 
 .node.status-finished.status-failed rect {
+  stroke: red;
   fill: red;
 }
 
 .node.status-finished.status-failed text {
-  color: white;
+  fill: white;
 }
 
 .node.status-finished rect {
+  stroke: #7f7;
   fill: #7f7;
 }
 
 .node.status-running rect {
+  stroke: yellow;
   fill: yellow;
 }
 
