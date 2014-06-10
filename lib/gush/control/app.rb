@@ -115,6 +115,12 @@ module Gush
         content_type :json
         workflow.to_json
       end
+
+      post "/destroy/:workflow" do |id|
+        workflow = Gush.find_workflow(id, settings.redis)
+        Gush.destroy_workflow(workflow, settings.redis)
+        {status: "ok"}.to_json
+      end
     end
   end
 end

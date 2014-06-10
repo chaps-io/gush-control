@@ -60,14 +60,18 @@ class @Gush
       el.removeClass("success")
         .addClass("alert")
         .data("action", "stop")
-        .text("Stop Workflow")
+        .contents().filter ->
+          this.nodeType == 3
+        .replaceWith("Stop workflow")
 
   stopWorkflow: (workflow, el) ->
     if el
       el.addClass("success")
         .removeClass("alert")
         .data("action", "start")
-        .text("Start Workflow")
+        .contents().filter ->
+          this.nodeType == 3
+        .replaceWith("Start workflow")
 
   createWorkflow: (workflow) ->
     $.ajax
@@ -77,6 +81,15 @@ class @Gush
         console.log(response)
       success: (response) =>
         @_addWorkflow(response);
+
+  destroyWorkflow: (workflow) ->
+    $.ajax
+      url: "/destroy/" + workflow,
+      type: "POST",
+      error: (response) ->
+        console.log(response)
+      success: (response) =>
+        window.location.href = "/"
 
   _onOpen: ->
     $("#modalBox").foundation("reveal", "close");
