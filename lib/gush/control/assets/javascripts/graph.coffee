@@ -21,6 +21,9 @@ class @Graph
 
     renderer.drawNodes (graph, root) =>
       svgNodes = oldDrawNodes(graph, root);
+      svgNodes.attr "data-job-name", (name) =>
+        name;
+
       svgNodes.attr "class", (name) =>
         node = @digraph.node(name)
         classes = "node " + name.replace(/::/g, '_').toLowerCase()

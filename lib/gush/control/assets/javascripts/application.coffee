@@ -17,3 +17,9 @@ $(document).ready ->
 
   $(this).on "click", ".destroy-workflow", ->
     Gush.destroyWorkflow($(this).data("workflow-id"), $(this))
+
+  $(this).on "click", "svg .node", ->
+    workflow_id = $(this).closest('svg').data('workflow-id')
+    name = $(this).data('job-name')
+
+    alert("Hiya! I'm a job #{name} from #{workflow_id}")
