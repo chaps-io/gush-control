@@ -18,6 +18,25 @@ module Gush
         slim :index
       end
 
+      get "/jobs/:workflow_id.:job" do |workflow_id, job|
+        @workflow = Gush.find_workflow(workflow_id, settings.redis)
+        @job = @workflow.find_job(job)
+        slim :job
+      end
+
+      get '/logs/?:channel', provides: 'text/event-stream' do |channel|
+        redis = Redis.new(url: Gush.configuration.redis_url)
+        index = 0
+        stream :keep_open do |out|
+          loop do
+            logs = redis.lrange("gush.logs.#{channel}", index, index + 50)
+            index += logs.size
+            out << "data: #{logs}\n\n" if logs.present?
+            sleep 1
+          end
+        end
+      end
+
       get '/subscribe/?:channel', provides: 'text/event-stream' do |channel|
         stream :keep_open do |out|
           redis = Redis.new(url: Gush.configuration.redis_url)

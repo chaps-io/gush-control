@@ -49,6 +49,18 @@ class @Gush
 
     machinesSocket.onclose   = @_onClose
 
+  registerLogsSocket: (workflow, job) ->
+    logsSocket = new EventSource("/logs/#{workflow}.#{job}")
+
+    logsSocket.onopen    = @_onOpen
+    logsSocket.onerror   = @_onError
+    logsSocket.onmessage = (message) ->
+      logs = JSON.parse(message.data)
+      logs.forEach (log) ->
+        $("ul.logs").append("<li>#{log}</li>")
+
+    logsSocket.onclose   = @_onClose
+
   startWorkflow: (workflow, el) ->
     $.ajax
       url: "/start/" + workflow,

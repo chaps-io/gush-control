@@ -1,0 +1,12 @@
+.row
+  .large-8.columns
+    h1
+      = @job.name
+      '
+      small = @workflow.id
+
+h2 Logs
+ul.logs
+
+javascript:
+  Gush.registerLogsSocket("#{@workflow.id}", "#{@job.name}")

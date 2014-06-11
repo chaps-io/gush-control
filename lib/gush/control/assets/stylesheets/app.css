@@ -58,3 +58,14 @@ text {
   stroke-width: 1.5px;
   fill: none;
 }
+
+ul.logs {
+  border: 1px solid;
+  height: 500px;
+  overflow: scroll;
+  list-style-type: none;
+}
+
+ul.logs li{
+  border-bottom: 1px solid;
+}
