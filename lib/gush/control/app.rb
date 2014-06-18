@@ -1,7 +1,6 @@
 module Gush
   module Control
     class App < Sinatra::Base
-      set :sockets, []
       set :server, :thin
       set :redis, Redis.new(url: Gush.configuration.redis_url)
 
@@ -31,24 +30,16 @@ module Gush
           loop do
             logs = redis.lrange("gush.logs.#{channel}", index, index + 50)
             index += logs.size
-            out << "data: #{logs}\n\n" if logs.present?
+            out << "data: #{logs}\n\n" if logs.any?
             sleep 1
           end
         end
       end
 
       get '/subscribe/?:channel', provides: 'text/event-stream' do |channel|
-        stream :keep_open do |out|
-          redis = Redis.new(url: Gush.configuration.redis_url)
-          redis.subscribe("gush.#{channel}") do |on|
-            on.message do |channel, msg|
-              if out.closed?
-                redis.unsubscribe
-                next
-              end
-              out << "data: #{msg}\n\n"
-            end
-          end
+        stream(:keep_open) do |out|
+          $connections << [channel, out]
+          out.callback { $connections.delete([channel, out]) }
         end
       end
 
