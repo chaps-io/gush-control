@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "sinatra"
   spec.add_runtime_dependency "sinatra-assetpack"
-  spec.add_runtime_dependency "sinatra-pubsub"
   spec.add_runtime_dependency "thin"
   spec.add_runtime_dependency "tilt"
   spec.add_runtime_dependency "gush"
