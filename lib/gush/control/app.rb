@@ -3,6 +3,7 @@ module Gush
     class App < Sinatra::Base
       set :server, :thin
       set :redis, Redis.new(url: Gush.configuration.redis_url)
+      set :sockets, {}
 
       register Sinatra::AssetPack
 
@@ -23,35 +24,81 @@ module Gush
         slim :job
       end
 
-      get '/logs/?:channel', provides: 'text/event-stream' do |channel|
-        redis = Redis.new(url: Gush.configuration.redis_url)
-        index = 0
-        stream :keep_open do |out|
-          loop do
-            logs = redis.lrange("gush.logs.#{channel}", index, index + 50)
-            index += logs.size
-            out << "data: #{logs}\n\n" if logs.any?
-            sleep 1
+      get '/logs/?:channel' do |channel|
+        request.websocket do |ws|
+          ws.onopen do
+            settings.sockets[channel] ||= []
+            settings.sockets[channel] << ws
+          end
+
+          ws.onmessage do |msg|
+            EM.next_tick { settings.sockets[channel].each{|s| s.send(msg.to_json) } }
+          end
+
+          ws.onclose do
+            settings.sockets[channel].delete(ws)
+          end
+
+          Thread.new do
+            redis = Redis.new(url: Gush.configuration.redis_url)
+            index = 0
+            loop do
+              logs = redis.lrange("gush.logs.#{channel}", index, index + 50)
+              index += logs.size
+              EM.next_tick{ settings.sockets[channel].each{|s| s.send(logs.to_json) } } if logs.any?
+              sleep 1
+            end
           end
         end
       end
 
-      get '/subscribe/?:channel', provides: 'text/event-stream' do |channel|
-        stream(:keep_open) do |out|
-          $connections << [channel, out]
-          out.callback { $connections.delete([channel, out]) }
+      get '/subscribe/?:channel' do |channel|
+        channel = channel.to_sym
+        request.websocket do |ws|
+          ws.onopen do
+            settings.sockets[channel] ||= []
+            settings.sockets[channel] << ws
+          end
+
+          ws.onmessage do |msg|
+            EM.next_tick { settings.sockets[channel].each{|s| s.send(msg.to_json) } }
+          end
+
+          ws.onclose do
+            settings.sockets[channel].delete(ws)
+          end
+
+          Thread.new do
+            redis = Redis.new(url: Gush.configuration.redis_url)
+            redis.subscribe("gush.#{channel}") do |on|
+              on.message do |redis_channel, message|
+                EM.next_tick{ settings.sockets[channel].each{|s| s.send(message) } }
+              end
+            end
+          end
         end
       end
 
-      get "/workers", provides: "text/event-stream" do
+      get "/workers" do
         require "sidekiq/api"
         ps = Sidekiq::ProcessSet.new
 
-        stream :keep_open do |out|
-          loop do
-            data = ps.map{|process| {host: process["hostname"], pid: process["pid"], jobs: process["busy"] } }
-            out << "data: #{data.to_json}\n\n"
-            sleep 5
+        request.websocket do |ws|
+          ws.onopen do
+            settings.sockets[:workers] ||= []
+            settings.sockets[:workers] << ws
+          end
+
+          ws.onclose do
+            settings.sockets[:workers].delete(ws)
+          end
+
+          Thread.new do
+            loop do
+              data = ps.map{|process| {host: process["hostname"], pid: process["pid"], jobs: process["busy"] } }.to_json
+              EM.next_tick{ settings.sockets[:workers].each{|s| s.send(data) } }
+              sleep 5
+            end
           end
         end
       end
