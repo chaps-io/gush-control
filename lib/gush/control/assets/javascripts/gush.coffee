@@ -25,7 +25,7 @@ class @Gush
         $("table.nodes tbody").append(job.render())
 
   registerWorkersSocket: ->
-    workersSocket = new EventSource("/subscribe/workers.status")
+    workersSocket = new WebSocket(@_socketUrl("subscribe/workers.status"))
 
     workersSocket.onopen    = @_onOpen
     workersSocket.onerror   = @_onError
@@ -33,7 +33,7 @@ class @Gush
     workersSocket.onclose   = @_onClose
 
   registerWorkflowsSocket: ->
-    workflowsSocket = new EventSource("/subscribe/workflows.status")
+    workflowsSocket = new WebSocket(@_socketUrl("subscribe/workflows.status"))
 
     workflowsSocket.onopen    = @_onOpen
     workflowsSocket.onerror   = @_onError
@@ -41,7 +41,7 @@ class @Gush
     workflowsSocket.onclose   = @_onClose
 
   registerMachinesSocket: ->
-    machinesSocket = new EventSource("/workers")
+    machinesSocket = new WebSocket(@_socketUrl("workers"))
 
     machinesSocket.onopen    = @_onOpen
     machinesSocket.onerror   = @_onError
@@ -50,7 +50,7 @@ class @Gush
     machinesSocket.onclose   = @_onClose
 
   registerLogsSocket: (workflow, job) ->
-    logsSocket = new EventSource("/logs/#{workflow}.#{job}")
+    logsSocket = new WebSocket(@_socketUrl("/logs/#{workflow}.#{job}"))
 
     logsSocket.onopen    = @_onOpen
     logsSocket.onerror   = @_onError
@@ -115,7 +115,6 @@ class @Gush
 
   _onStatus: (message) =>
     message = JSON.parse(message.data)
-    console.log(message)
     switch message.status
       when "started"
         @_onJobStart(message)
@@ -173,3 +172,5 @@ class @Gush
     graph = new Graph("canvas-svg")
     graph.markNode(name, classes)
 
+  _socketUrl: (path) ->
+    "ws://#{window.location.host}/#{path}"
