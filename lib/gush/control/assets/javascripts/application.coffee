@@ -12,6 +12,9 @@ $(document).ready ->
     else
       Gush.stopWorkflow($(this).data("workflow-id"), $(this))
 
+  $(this).on "click", ".start-job", (event) ->
+    Gush.startJob($(this).data("workflow-id"), $(this).data("job-name"), $(this))
+
   $(this).on "click", ".create-workflow", ->
     Gush.createWorkflow($(this).data("workflow-class"))
 

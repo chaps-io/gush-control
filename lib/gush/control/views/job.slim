@@ -1,10 +1,24 @@
 .row
   .large-8.columns
     h1
+      - case
+      - when @job.failed?
+        span.label.alert Failed
+      - when @job.running?
+        span.label Running
+      - when @job.finished?
+        span.label.success Finished
+      - else
+        span.label.secondary Pending
       = @job.name
       '
+    h1
       small = @workflow.id
-
+  .large-4.columns
+    br
+    - if @job.finished? && @job.failed?
+      a.button.alert.small.radius.start-job data-workflow-id=@workflow.id data-job-name=@job.name
+        | Restart job
 h2 Logs
 ul.logs
 

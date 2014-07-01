@@ -76,6 +76,15 @@ class @Gush
           this.nodeType == 3
         .replaceWith("Stop workflow")
 
+  startJob: (workflow, job, el) ->
+    $.ajax
+      url: "/start/#{workflow}/#{job}",
+      type: "POST",
+      error: (response) ->
+        console.log(response)
+      success: () ->
+        location.reload();
+
   stopWorkflow: (workflow, el) ->
     if el
       el.addClass("success")
@@ -159,8 +168,9 @@ class @Gush
     @_markGraphNode(message.job, 'status-finished status-failed')
 
     workflow = @workflows[message.workflow_id]
-    workflow.markAsFailed();
-    $("table.workflows").find("##{message.workflow_id}").replaceWith(workflow.render())
+    if workflow
+      workflow.markAsFailed()
+      $("table.workflows").find("##{message.workflow_id}").replaceWith(workflow.render())
 
   _addWorkflow: (data) =>
     workflow = new Workflow(data)

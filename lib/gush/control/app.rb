@@ -130,8 +130,11 @@ module Gush
         slim :show
       end
 
-      post "/start/:workflow" do |workflow|
-        Gush.start_workflow(workflow, redis: settings.redis)
+      post "/start/:workflow/?:job?" do |workflow, job|
+        options = { redis: settings.redis }
+        options[:jobs] = [job] if job
+
+        Gush.start_workflow(workflow, options)
         content_type :json
         workflow.to_json
       end
