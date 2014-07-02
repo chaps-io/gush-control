@@ -83,7 +83,7 @@ class @Gush
       error: (response) ->
         console.log(response)
       success: () ->
-        location.reload();
+        window.location.href = "/show/#{workflow}"
 
   stopWorkflow: (workflow, el) ->
     if el
@@ -152,10 +152,10 @@ class @Gush
         machine.render()
 
   _onJobStart: (message) =>
-    @_markGraphNode(message.job, 'status-running')
+    @_updateGraphStatus(message.workflow_id)
 
   _onJobSuccess: (message) =>
-    @_markGraphNode(message.job, 'status-finished')
+    @_updateGraphStatus(message.workflow_id)
 
     workflow = @workflows[message.workflow_id]
     if workflow
@@ -165,7 +165,7 @@ class @Gush
   _onJobHeartbeat: (message) =>
 
   _onJobFail: (message) =>
-    @_markGraphNode(message.job, 'status-finished status-failed')
+    @_updateGraphStatus(message.workflow_id)
 
     workflow = @workflows[message.workflow_id]
     if workflow
@@ -178,9 +178,20 @@ class @Gush
 
     $("table.workflows").append(workflow.render())
 
-  _markGraphNode: (name, classes) ->
-    graph = new Graph("canvas-svg")
-    graph.markNode(name, classes)
+  _updateGraphStatus: (workflow_id) ->
+    $.ajax
+      url: "/show/#{workflow_id}.json",
+      type: "GET",
+      error: (response) ->
+        console.log(response)
+      success: (response) =>
+        graph = new Graph("canvas-#{workflow_id}")
+        response.nodes.each (node) ->
+          klasses = switch
+            when node.failed then "status-finished status-failed"
+            when node.finished then "status-finished"
+            when node.enqueued then "status-running"
+          graph.markNode(node.name, klasses)
 
   _socketUrl: (path) ->
     "ws://#{window.location.host}/#{path}"

@@ -21,7 +21,7 @@ $(document).ready ->
   $(this).on "click", ".destroy-workflow", ->
     Gush.destroyWorkflow($(this).data("workflow-id"), $(this))
 
-  $(this).on "click", "svg .node", ->
+  $(this).on "dblclick", "svg .node", ->
     workflow_id = $(this).closest('svg').data('workflow-id')
     name = $(this).data('job-name')
     window.location.href = "/jobs/#{workflow_id}.#{name}"

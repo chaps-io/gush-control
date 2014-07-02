@@ -103,8 +103,14 @@ module Gush
         end
       end
 
-      get "/show/:workflow" do |id|
+      get "/show/:workflow.?:format?" do |id, format|
         @workflow = Gush.find_workflow(id, settings.redis)
+
+        if format == "json"
+          content_type :json
+          return @workflow.to_json
+        end
+
         @links = []
         @nodes = []
         @nodes << {name: "Start"}

@@ -14,7 +14,7 @@
         a.destroy-workflow data-workflow-id=@workflow.id href="#" Delete workflow
 .row
   .large-12.columns
-    svg#canvas-svg data-workflow-id=@workflow.id width="100%" height="400"
+    svg data-workflow-id=@workflow.id width="100%" height="400" id="canvas-#{@workflow.id}"
       g class="viewport"
 .row
   .large-12.columns
@@ -33,6 +33,6 @@ script
 
 javascript:
 
-  graph = new Graph("canvas-svg")
+  graph = new Graph("canvas-#{@workflow.id}")
   graph.populate(nodes, links)
   graph.render()
