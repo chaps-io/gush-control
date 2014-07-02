@@ -157,7 +157,7 @@ class @Gush
 
   _onJobSuccess: (message) =>
     @_updateGraphStatus(message.workflow_id)
-    @_updateJobStatus(message.job, "Running")
+    @_updateJobStatus(message.job, "Finished")
 
     workflow = @workflows[message.workflow_id]
     if workflow
