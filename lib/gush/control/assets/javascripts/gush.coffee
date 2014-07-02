@@ -94,6 +94,15 @@ class @Gush
           this.nodeType == 3
         .replaceWith("Start workflow")
 
+  retryWorkflow: (workflow_id) ->
+    $.ajax
+      url: "/show/#{workflow_id}.json",
+      type: "GET",
+      success: (response) =>
+        response.nodes.each (node) =>
+          if node.failed
+            @startJob(workflow_id, node.name, null)
+
   createWorkflow: (workflow) ->
     $.ajax
       url: "/create/" + workflow,
