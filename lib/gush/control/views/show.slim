@@ -11,6 +11,8 @@
       span data-dropdown="drop"
     ul#drop.f-dropdown data-dropdown-content=true
       li
+        a.retry-workflow data-workflow-id=@workflow.id href="#" Restart failed jobs
+      li
         a.destroy-workflow data-workflow-id=@workflow.id href="#" Delete workflow
 .row
   .large-12.columns

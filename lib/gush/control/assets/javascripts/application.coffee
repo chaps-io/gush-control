@@ -21,6 +21,9 @@ $(document).ready ->
   $(this).on "click", ".destroy-workflow", ->
     Gush.destroyWorkflow($(this).data("workflow-id"), $(this))
 
+  $(this).on "click", ".retry-workflow", ->
+    Gush.retryWorkflow($(this).data("workflow-id"), $(this))
+
   $(this).on "dblclick", "svg .node", ->
     workflow_id = $(this).closest('svg').data('workflow-id')
     name = $(this).data('job-name')
