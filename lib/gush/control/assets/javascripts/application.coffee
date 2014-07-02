@@ -25,3 +25,14 @@ $(document).ready ->
     workflow_id = $(this).closest('svg').data('workflow-id')
     name = $(this).data('job-name')
     window.location.href = "/jobs/#{workflow_id}.#{name}"
+
+  $(this).on "click", ".jobs-filter a", (event) ->
+    event.preventDefault()
+    filter = $(this).html().toLowerCase()
+    table = $("table.nodes tbody")
+
+    table.find("tr").hide()
+    if filter == "all"
+      table.find("tr").show()
+    else
+      table.find("tr.#{filter}").show()
