@@ -29,10 +29,13 @@ $(document).ready ->
     name = $(this).data('job-name')
     window.location.href = "/jobs/#{workflow_id}.#{name}"
 
-  $(this).on "click", ".jobs-filter a", (event) ->
+  $(this).on "click", ".jobs-filter dd a", (event) ->
     event.preventDefault()
     filter = $(this).html().toLowerCase()
     table = $("table.nodes tbody")
+
+    $(this).closest('dl').find('dd').removeClass('active')
+    $(this).parent().addClass('active')
 
     table.find("tr").hide()
     if filter == "all"
