@@ -162,9 +162,11 @@ class @Gush
 
   _onJobStart: (message) =>
     @_updateGraphStatus(message.workflow_id)
+    @_updateJobStatus(message.job, "Running")
 
   _onJobSuccess: (message) =>
     @_updateGraphStatus(message.workflow_id)
+    @_updateJobStatus(message.job, "Running")
 
     workflow = @workflows[message.workflow_id]
     if workflow
@@ -175,6 +177,7 @@ class @Gush
 
   _onJobFail: (message) =>
     @_updateGraphStatus(message.workflow_id)
+    @_updateJobStatus(message.job, "Failed")
 
     workflow = @workflows[message.workflow_id]
     if workflow
@@ -201,6 +204,9 @@ class @Gush
             when node.finished then "status-finished"
             when node.enqueued then "status-running"
           graph.markNode(node.name, klasses)
+
+  _updateJobStatus: (name, status) ->
+    $(".nodes tbody").find("td:contains('#{name}')").next("td").html(status).parent().removeClass().addClass(status.toLowerCase())
 
   _socketUrl: (path) ->
     "ws://#{window.location.host}/#{path}"
