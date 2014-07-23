@@ -35,11 +35,7 @@ module Gush
             EM.next_tick { settings.sockets[channel].each{|s| s.send(msg.to_json) } }
           end
 
-          ws.onclose do
-            settings.sockets[channel].delete(ws)
-          end
-
-          Thread.new do
+          tid = Thread.new do
             redis = Redis.new(url: Gush.configuration.redis_url)
             index = 0
             loop do
@@ -49,6 +45,12 @@ module Gush
               sleep 1
             end
           end
+
+          ws.onclose do
+            settings.sockets[channel].delete(ws)
+            Thread.kill(tid)
+          end
+
         end
       end
 
@@ -64,17 +66,18 @@ module Gush
             EM.next_tick { settings.sockets[channel].each{|s| s.send(msg.to_json) } }
           end
 
-          ws.onclose do
-            settings.sockets[channel].delete(ws)
-          end
-
-          Thread.new do
+          tid = Thread.new do
             redis = Redis.new(url: Gush.configuration.redis_url)
             redis.subscribe("gush.#{channel}") do |on|
               on.message do |redis_channel, message|
                 EM.next_tick{ settings.sockets[channel].each{|s| s.send(message) } }
               end
             end
+          end
+
+          ws.onclose do
+            settings.sockets[channel].delete(ws)
+            Thread.kill(tid)
           end
         end
       end
@@ -89,16 +92,17 @@ module Gush
             settings.sockets[:workers] << ws
           end
 
-          ws.onclose do
-            settings.sockets[:workers].delete(ws)
-          end
-
-          Thread.new do
+          tid = Thread.new do
             loop do
               data = ps.map{|process| {host: process["hostname"], pid: process["pid"], jobs: process["busy"] } }.to_json
               EM.next_tick{ settings.sockets[:workers].each{|s| s.send(data) } }
               sleep 5
             end
+          end
+
+          ws.onclose do
+            settings.sockets[:workers].delete(ws)
+            Thread.kill(tid)
           end
         end
       end
@@ -129,7 +133,7 @@ module Gush
             @links << {source: name, target: out, type: "flow"}
           end
 
-         if node.outgoing.empty?
+          if node.outgoing.empty?
             @links << {source: name, target: "End", type: "flow"}
           end
         end
