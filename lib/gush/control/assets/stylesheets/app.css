@@ -64,8 +64,10 @@ ul.logs {
   height: 500px;
   overflow: scroll;
   list-style-type: none;
+  background: black;
 }
 
 ul.logs li{
-  border-bottom: 1px solid;
+  color: wheat;
+  font-family: monospace;
 }

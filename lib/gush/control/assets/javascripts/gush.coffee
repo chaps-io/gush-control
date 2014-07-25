@@ -49,15 +49,17 @@ class @Gush
 
     machinesSocket.onclose   = @_onClose
 
-  registerLogsSocket: (workflow, job) ->
+  registerLogsSocket: (workflow, job) =>
     logsSocket = new WebSocket(@_socketUrl("/logs/#{workflow}.#{job}"))
 
     logsSocket.onopen    = @_onOpen
     logsSocket.onerror   = @_onError
-    logsSocket.onmessage = (message) ->
+    logsSocket.onmessage = (message) =>
       logs = JSON.parse(message.data)
-      logs.forEach (log) ->
-        $("ul.logs").append("<li>#{log}</li>")
+      logs.forEach (log) =>
+        container = $("ul.logs")
+        container.append("<li>#{log}</li>")
+        @_scrollToBottom(container)
 
     logsSocket.onclose   = @_onClose
 
@@ -210,3 +212,6 @@ class @Gush
 
   _socketUrl: (path) ->
     "ws://#{window.location.host}/#{path}"
+
+  _scrollToBottom: (container) ->
+    container.scrollTop(container.prop('scrollHeight'))
