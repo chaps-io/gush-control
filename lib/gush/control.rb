@@ -9,6 +9,7 @@ require "sinatra/assetpack"
 require "gush/control/version"
 require "gush/control/app"
 require "gush/control/cli_extension"
+require "gush/control/log_sender"
 
 module Gush
   module Control

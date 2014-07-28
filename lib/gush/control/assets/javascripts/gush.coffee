@@ -52,14 +52,11 @@ class @Gush
   registerLogsSocket: (workflow, job) =>
     logsSocket = new WebSocket(@_socketUrl("/logs/#{workflow}.#{job}"))
 
+    @_registerScrollHook(logsSocket)
+
     logsSocket.onopen    = @_onOpen
     logsSocket.onerror   = @_onError
-    logsSocket.onmessage = (message) =>
-      logs = JSON.parse(message.data)
-      logs.forEach (log) =>
-        container = $("ul.logs")
-        container.append("<li>#{log}</li>")
-        @_scrollToBottom(container)
+    logsSocket.onmessage = @_onLogsSocketMessage
 
     logsSocket.onclose   = @_onClose
 
@@ -215,3 +212,24 @@ class @Gush
 
   _scrollToBottom: (container) ->
     container.scrollTop(container.prop('scrollHeight'))
+
+  _preservePosition: (container, originalHeight) ->
+    container.scrollTop(container.prop('scrollHeight') - originalHeight)
+
+  _onLogsSocketMessage: (message) =>
+    container = $('ul.logs')
+    originalHeight = container.prop('scrollHeight')
+
+    logs = JSON.parse(message.data)
+    logs.lines.forEach (log) =>
+      container[logs.method]("<li>#{log}</li>")
+      if logs.method is "append"
+        @_scrollToBottom(container)
+      else
+        @_preservePosition(container, originalHeight)
+
+  _registerScrollHook: (logsSocket) ->
+    container = $('ul.logs')
+    container.scroll (e) ->
+      if container.scrollTop() < 30
+        logsSocket.send("prepend")
