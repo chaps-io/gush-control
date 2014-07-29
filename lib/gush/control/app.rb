@@ -26,24 +26,20 @@ module Gush
 
       get '/logs/?:channel' do |channel|
         request.websocket do |ws|
+          commands = Queue.new
+          redis = Redis.new(url: Gush.configuration.redis_url)
+          tid = LogSender.new(settings,
+                              redis,
+                              commands,
+                              channel).run
+
           ws.onopen do
             settings.sockets[channel] ||= []
             settings.sockets[channel] << ws
           end
 
           ws.onmessage do |msg|
-            EM.next_tick { settings.sockets[channel].each{|s| s.send(msg.to_json) } }
-          end
-
-          tid = Thread.new do
-            redis = Redis.new(url: Gush.configuration.redis_url)
-            index = 0
-            loop do
-              logs = redis.lrange("gush.logs.#{channel}", index, index + 50)
-              index += logs.size
-              EM.next_tick{ settings.sockets[channel].each{|s| s.send(logs.to_json) } } if logs.any?
-              sleep 1
-            end
+            commands.push(msg)
           end
 
           ws.onclose do
