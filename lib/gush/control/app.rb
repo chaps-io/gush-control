@@ -145,6 +145,14 @@ module Gush
         workflow.to_json
       end
 
+      post "/stop/:workflow" do |workflow|
+        options = { redis: settings.redis }
+
+        Gush.stop_workflow(workflow, options)
+        content_type :json
+        workflow.to_json
+      end
+
       post "/create/:workflow" do |workflow|
         cli = Gush::CLI.new
 

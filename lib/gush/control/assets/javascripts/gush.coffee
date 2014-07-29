@@ -85,6 +85,12 @@ class @Gush
         window.location.href = "/show/#{workflow}"
 
   stopWorkflow: (workflow, el) ->
+    $.ajax
+      url: "/stop/" + workflow,
+      type: "POST",
+      error: (response) ->
+        console.log(response)
+
     if el
       el.addClass("success")
         .removeClass("alert")
