@@ -6,9 +6,14 @@
       small = @workflow.id
   .large-4.columns
     br
-    a.button.split.success.small.radius.start-workflow data-action="start" data-workflow-id=@workflow.id
-      | Start workflow
-      span data-dropdown="drop"
+    - if @workflow.running?
+      a.button.split.alert.small.radius.start-workflow data-action="stop" data-workflow-id=@workflow.id
+        | Stop workflow
+        span data-dropdown="drop"
+    - else
+      a.button.split.success.small.radius.start-workflow data-action="start" data-workflow-id=@workflow.id
+        | Start workflow
+        span data-dropdown="drop"
     ul#drop.f-dropdown data-dropdown-content=true
       li
         a.retry-workflow data-workflow-id=@workflow.id href="#" Restart failed jobs
