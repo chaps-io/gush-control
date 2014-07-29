@@ -27,7 +27,8 @@ $(document).ready ->
   $(this).on "dblclick", "svg .node", ->
     workflow_id = $(this).closest('svg').data('workflow-id')
     name = $(this).data('job-name')
-    window.location.href = "/jobs/#{workflow_id}.#{name}"
+    if name isnt "Start" and name isnt "End"
+      window.location.href = "/jobs/#{workflow_id}.#{name}"
 
   $(this).on "click", ".jobs-filter dd a", (event) ->
     event.preventDefault()
