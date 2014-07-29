@@ -115,7 +115,7 @@ class @Gush
       error: (response) ->
         console.log(response)
       success: (response) =>
-        @_addWorkflow(response);
+        window.location.href = "/show/#{response.id}"
 
   destroyWorkflow: (workflow) ->
     $.ajax
