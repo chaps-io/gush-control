@@ -10,7 +10,7 @@ class LogSender
 
   def run
     Thread.new do
-      tail = message_count - ROWS
+      tail = [0, message_count - ROWS].max
       head = (tail - 1).downto(0).each_slice(ROWS)
 
       loop do
