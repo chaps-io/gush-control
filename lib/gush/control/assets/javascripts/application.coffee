@@ -42,3 +42,7 @@ $(document).ready ->
       table.find("tr").show()
     else
       table.find("tr.#{filter}").show()
+
+  $(this).on "click", "a.remove-completed", (event) ->
+    event.preventDefault()
+    Gush.removeCompleted()

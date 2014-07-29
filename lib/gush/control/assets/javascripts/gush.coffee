@@ -126,6 +126,15 @@ class @Gush
       success: (response) =>
         window.location.href = "/"
 
+  removeCompleted: ->
+    $.ajax
+      url: "/purge",
+      type: "POST",
+      error: (response) ->
+        console.log(response)
+      success: (response) =>
+        window.location.href = "/"
+
   _onOpen: ->
     $("#modalBox").foundation("reveal", "close");
 

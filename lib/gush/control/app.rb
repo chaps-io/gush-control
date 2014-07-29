@@ -167,6 +167,15 @@ module Gush
         Gush.destroy_workflow(workflow, settings.redis)
         {status: "ok"}.to_json
       end
+
+      post "/purge" do
+        completed = Gush.all_workflows(settings.redis).select(&:finished?)
+        completed.each do |workflow|
+          Gush.destroy_workflow(workflow, settings.redis)
+        end
+
+        {status: "ok"}
+      end
     end
   end
 end

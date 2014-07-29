@@ -1,6 +1,8 @@
 .row
   .large-12.columns
-    h1 Registered workflows
+    h1
+      'Registered workflows
+      a.remove-completed.radius.button.alert.right href="#" Purge completed
 
     table.workflows data-workflows=@workflows.to_json
       thead
