@@ -8,7 +8,7 @@ module Gush
 
       attr_accessor :level, :progname
 
-      def initialize(redis, channel, level=DEBUG)
+      def initialize(redis, channel, level = DEBUG)
         @progname = nil
         @redis = redis
         @level = level
@@ -75,9 +75,9 @@ module Gush
       end
 
       def format_message(severity, prog, message)
-        current_time = Time.now
+        current_time = Time.now.utc
         severity = LABELS[severity]
-        "%s, [%s.%s #%s] %5s -- %s: %s\n" % [severity[0], current_time, current_time, $$, severity, prog, message]
+        "%s, [%s.%s #%s] %5s -- %s: %s\n" % [severity[0], current_time.iso8601, current_time.usec, $$, severity, prog, message]
       end
     end
   end
