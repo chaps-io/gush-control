@@ -2,7 +2,7 @@ module Gush
   module Control
     class App < Sinatra::Base
       set :server, :thin
-      set :redis, Redis.new(url: Gush.configuration.redis_url)
+      set :client, Gush::Client.new
       set :sockets, {}
 
       register Sinatra::AssetPack
@@ -14,12 +14,12 @@ module Gush
       }
 
       get "/" do
-        @workflows = Gush.all_workflows(settings.redis)
+        @workflows = settings.client.all_workflows
         slim :index
       end
 
       get "/jobs/:workflow_id.:job" do |workflow_id, job|
-        @workflow = Gush.find_workflow(workflow_id, settings.redis)
+        @workflow = settings.client.find_workflow(workflow_id)
         @job = @workflow.find_job(job)
         slim :job
       end
@@ -27,7 +27,7 @@ module Gush
       get '/logs/?:channel' do |channel|
         request.websocket do |ws|
           commands = Queue.new
-          redis = Redis.new(url: Gush.configuration.redis_url)
+          redis = Redis.new(url: settings.client.configuration.redis_url)
           tid = LogSender.new(settings,
                               redis,
                               commands,
@@ -63,7 +63,7 @@ module Gush
           end
 
           tid = Thread.new do
-            redis = Redis.new(url: Gush.configuration.redis_url)
+            redis = Redis.new(url: settings.client.configuration.redis_url)
             redis.subscribe("gush.#{channel}") do |on|
               on.message do |redis_channel, message|
                 EM.next_tick{ settings.sockets[channel].each{|s| s.send(message) } }
@@ -104,7 +104,7 @@ module Gush
       end
 
       get "/show/:workflow.?:format?" do |id, format|
-        @workflow = Gush.find_workflow(id, settings.redis)
+        @workflow = settings.client.find_workflow(id)
 
         if format == "json"
           content_type :json
@@ -137,41 +137,33 @@ module Gush
       end
 
       post "/start/:workflow/?:job?" do |workflow, job|
-        options = { redis: settings.redis }
-        options[:jobs] = [job] if job
-
-        Gush.start_workflow(workflow, options)
+        settings.client.start_workflow(workflow, Array(job))
         content_type :json
         workflow.to_json
       end
 
       post "/stop/:workflow" do |workflow|
-        options = { redis: settings.redis }
-
-        Gush.stop_workflow(workflow, options)
+        settings.client.stop_workflow(workflow)
         content_type :json
         workflow.to_json
       end
 
-      post "/create/:workflow" do |workflow|
-        cli = Gush::CLI.new
-
-        id = cli.create(workflow)
-        workflow = Gush.find_workflow(id, settings.redis)
+      post "/create/:workflow" do |name|
+        workflow = settings.client.create_workflow(name)
         content_type :json
         workflow.to_json
       end
 
       post "/destroy/:workflow" do |id|
-        workflow = Gush.find_workflow(id, settings.redis)
-        Gush.destroy_workflow(workflow, settings.redis)
+        workflow = settings.client.find_workflow(id)
+        settings.client.destroy_workflow(workflow)
         {status: "ok"}.to_json
       end
 
       post "/purge" do
-        completed = Gush.all_workflows(settings.redis).select(&:finished?)
+        completed = settings.client.all_workflows.select(&:finished?)
         completed.each do |workflow|
-          Gush.destroy_workflow(workflow, settings.redis)
+          settings.client.destroy_workflow(workflow)
         end
 
         {status: "ok"}
