@@ -30,7 +30,7 @@ class LogSender
           end
         end
 
-        send_lines(logs, method)
+        send_lines(sanitize_logs(logs), method)
         sleep 1
       end
     end
@@ -57,6 +57,10 @@ class LogSender
 
   def redis_key
     "gush.logs.#{channel}"
+  end
+
+  def sanitize_logs(lines)
+    lines.map {|l| Rack::Utils.escape_html(l) }
   end
 
   attr_reader :channel, :redis, :commands, :settings
