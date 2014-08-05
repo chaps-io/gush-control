@@ -135,6 +135,15 @@ class @Gush
       success: (response) =>
         window.location.href = "/"
 
+  removeLogs: (workflow_id, job_name) ->
+    $.ajax
+      url: "/purge_logs/#{workflow_id}.#{job_name}",
+      type: "POST",
+      error: (response) ->
+        console.log(response)
+      success: (response) =>
+        window.location.href = "/jobs/#{workflow_id}.#{job_name}"
+
   _onOpen: ->
     $("#modalBox").foundation("reveal", "close");
 

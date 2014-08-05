@@ -156,17 +156,32 @@ module Gush
 
       post "/destroy/:workflow" do |id|
         workflow = settings.client.find_workflow(id)
-        settings.client.destroy_workflow(workflow)
+        remove_workflow_and_logs(workflow)
+        {status: "ok"}.to_json
+      end
+
+      post "/purge_logs/:channel" do |channel|
+        redis = Redis.new(url: settings.client.configuration.redis_url)
+        redis.del("gush.logs.#{channel}")
+
         {status: "ok"}.to_json
       end
 
       post "/purge" do
         completed = settings.client.all_workflows.select(&:finished?)
         completed.each do |workflow|
-          settings.client.destroy_workflow(workflow)
+          remove_workflow_and_logs(workflow)
         end
 
-        {status: "ok"}
+        {status: "ok"}.to_json
+      end
+
+      private
+      def remove_workflow_and_logs(workflow)
+        redis = Redis.new(url: settings.client.configuration.redis_url)
+        keys = redis.keys("gush.logs.#{workflow.id}.*")
+        keys.each {|key| redis.del(key) }
+        settings.client.destroy_workflow(workflow)
       end
     end
   end
