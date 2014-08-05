@@ -177,6 +177,11 @@ module Gush
         Thread.current[:redis] ||= Redis.new(url: settings.client.configuration.redis_url)
       end
 
+      def remove_workflow_and_logs(workflow)
+        remove_workflow(workflow)
+        remove_logs(workflow)
+      end
+
       def remove_workflow(workflow)
         settings.client.destroy_workflow(workflow)
       end
