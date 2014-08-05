@@ -70,4 +70,5 @@ ul.logs {
 ul.logs li{
   color: wheat;
   font-family: monospace;
+  white-space: pre-wrap;
 }
