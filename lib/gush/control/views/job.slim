@@ -18,6 +18,8 @@
         a href="/show/#{@workflow.id}" Back to workflow
   .large-4.columns
     br
+    a.button.alert.small.radius.remove-logs data-workflow-id=@workflow.id data-job-name=@job.name
+      | Remove logs
     - if @job.finished? && @job.failed?
       a.button.alert.small.radius.start-job data-workflow-id=@workflow.id data-job-name=@job.name
         | Restart job

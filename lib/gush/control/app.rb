@@ -27,7 +27,6 @@ module Gush
       get '/logs/?:channel' do |channel|
         request.websocket do |ws|
           commands = Queue.new
-          redis = Redis.new(url: settings.client.configuration.redis_url)
           tid = LogSender.new(settings,
                               redis,
                               commands,
@@ -63,7 +62,6 @@ module Gush
           end
 
           tid = Thread.new do
-            redis = Redis.new(url: settings.client.configuration.redis_url)
             redis.subscribe("gush.#{channel}") do |on|
               on.message do |redis_channel, message|
                 EM.next_tick{ settings.sockets[channel].each{|s| s.send(message) } }
@@ -156,17 +154,44 @@ module Gush
 
       post "/destroy/:workflow" do |id|
         workflow = settings.client.find_workflow(id)
-        settings.client.destroy_workflow(workflow)
+        remove_workflow_and_logs(workflow)
+        {status: "ok"}.to_json
+      end
+
+      post "/purge_logs/:channel" do |channel|
+        remove_logs_in_channel(channel)
+
         {status: "ok"}.to_json
       end
 
       post "/purge" do
         completed = settings.client.all_workflows.select(&:finished?)
-        completed.each do |workflow|
-          settings.client.destroy_workflow(workflow)
-        end
+        completed.each {|workflow| remove_workflow_and_logs(workflow) }
 
-        {status: "ok"}
+        {status: "ok"}.to_json
+      end
+
+      private
+
+      def redis
+        Thread.current[:redis] ||= Redis.new(url: settings.client.configuration.redis_url)
+      end
+
+      def remove_workflow_and_logs(workflow)
+        remove_workflow(workflow)
+        remove_logs(workflow)
+      end
+
+      def remove_workflow(workflow)
+        settings.client.destroy_workflow(workflow)
+      end
+
+      def remove_logs(workflow)
+        redis.keys("gush.logs.#{workflow.id}.*").each {|key| redis.del(key) }
+      end
+
+      def remove_logs_in_channel(channel)
+        redis.del("gush.logs.#{channel}")
       end
     end
   end

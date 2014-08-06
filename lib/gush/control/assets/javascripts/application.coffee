@@ -47,3 +47,7 @@ $(document).ready ->
   $(this).on "click", "a.remove-completed", (event) ->
     event.preventDefault()
     Gush.removeCompleted()
+
+  $(this).on "click", "a.remove-logs", (event) ->
+    event.preventDefault()
+    Gush.removeLogs($(this).data('workflow-id'), $(this).data('job-name'))
