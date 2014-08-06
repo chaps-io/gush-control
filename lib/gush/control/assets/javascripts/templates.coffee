@@ -17,8 +17,8 @@ class @Templates
     Mustache.render(template, data)
 
   @action: (data) ->
-    description = if data.status == "Running" then "Stop Workflow" else "Start Workflow"
-    buttonClass = {"Start Workflow": "success", "Stop Workflow": "alert"}
+    description = if data.status == "Running" then "Stop Workflow" else "Start workflow"
+    buttonClass = {"Start workflow": "success", "Stop Workflow": "alert"}
     buttonAction = if data.status == "Running" then "stop" else "start"
     template = $("#workflow-action-template").html()
 
