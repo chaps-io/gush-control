@@ -5,3 +5,4 @@ gemspec
 
 gem "gush", git: "git@github.com:lonelyplanet/gush.git"
 gem "tilt", "~> 1.4.1"
+gem "bbq-spawn", git: "git@github.com:drugpl/bbq-spawn.git"
