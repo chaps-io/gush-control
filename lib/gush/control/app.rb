@@ -2,7 +2,7 @@ module Gush
   module Control
     class App < Sinatra::Base
       set :server, :thin
-      set :client, Gush::Client.new
+      set :client, proc { Gush::Client.new }
       set :sockets, {}
 
       register Sinatra::AssetPack
