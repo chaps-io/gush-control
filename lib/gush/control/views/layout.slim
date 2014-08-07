@@ -39,7 +39,7 @@ html
             ul class="dropdown"
               - Gush::Workflow.descendants.each do |workflow|
                 li
-                  a.create-workflow data-workflow-class=workflow href="javascript:void(0);" = workflow
+                  a.create-workflow data-workflow-class=workflow href="#" = workflow
     == yield
     #modalBox.reveal-modal.text-center data-reveal="data-reval" data-reveal-id="modalBox"
       .data
@@ -52,7 +52,7 @@ html
       span class="round label {{class}}"
         | {{status}}
     script id="workflow-template" type="x-tmpl-mustache"
-      tr id="{{id}}" data-finished="{{finished}}" data-total="{{total}}"
+      tr id="{{id}}" data-name="{{name}}" data-finished="{{finished}}" data-total="{{total}}"
         td
           a href="/show/{{id}}"
             | {{id}}
