@@ -1,11 +1,11 @@
 class LogSender
   ROWS = 25
 
-  def initialize(settings, redis, commands, channel)
+  def initialize(socket, redis, commands, channel)
     @redis = redis
     @commands = commands
     @channel = channel
-    @settings = settings
+    @socket = socket
   end
 
   def run
@@ -40,7 +40,7 @@ class LogSender
 
   def send_lines(logs, method)
     data = {lines: logs, method: method}.to_json
-    EM.next_tick{ settings.sockets[channel].each{|s| s.send(data) } } if logs.any?
+    EM.next_tick{ socket.send(data) } if logs.any?
   end
 
   def message_count
@@ -63,5 +63,5 @@ class LogSender
     lines.map {|l| Rack::Utils.escape_html(l) }
   end
 
-  attr_reader :channel, :redis, :commands, :settings
+  attr_reader :channel, :redis, :commands, :socket
 end

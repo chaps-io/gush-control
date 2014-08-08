@@ -1,9 +1,10 @@
+require "sidekiq/api"
+
 module Gush
   module Control
     class App < Sinatra::Base
       set :server, :thin
       set :client, proc { Gush::Client.new }
-      set :sockets, {}
 
       register Sinatra::AssetPack
 
@@ -27,75 +28,55 @@ module Gush
       get '/logs/?:channel' do |channel|
         request.websocket do |ws|
           commands = Queue.new
-          tid = LogSender.new(settings,
+          tid = LogSender.new(ws,
                               redis,
                               commands,
                               channel).run
-
-          ws.onopen do
-            settings.sockets[channel] ||= []
-            settings.sockets[channel] << ws
-          end
 
           ws.onmessage do |msg|
             commands.push(msg)
           end
 
           ws.onclose do
-            settings.sockets[channel].delete(ws)
             Thread.kill(tid)
           end
-
         end
       end
 
       get '/subscribe/?:channel' do |channel|
         channel = channel.to_sym
         request.websocket do |ws|
-          ws.onopen do
-            settings.sockets[channel] ||= []
-            settings.sockets[channel] << ws
-          end
-
           ws.onmessage do |msg|
-            EM.next_tick { settings.sockets[channel].each{|s| s.send(msg.to_json) } }
+            EM.next_tick { ws.send(msg.to_json) }
           end
 
           tid = Thread.new do
             redis.subscribe("gush.#{channel}") do |on|
               on.message do |redis_channel, message|
-                EM.next_tick{ settings.sockets[channel].each{|s| s.send(message) } }
+                EM.next_tick{ ws.send(message) }
               end
             end
           end
 
           ws.onclose do
-            settings.sockets[channel].delete(ws)
             Thread.kill(tid)
           end
         end
       end
 
       get "/workers" do
-        require "sidekiq/api"
         ps = Sidekiq::ProcessSet.new
 
         request.websocket do |ws|
-          ws.onopen do
-            settings.sockets[:workers] ||= []
-            settings.sockets[:workers] << ws
-          end
-
           tid = Thread.new do
             loop do
               data = ps.map{|process| {host: process["hostname"], pid: process["pid"], jobs: process["busy"] } }.to_json
-              EM.next_tick{ settings.sockets[:workers].each{|s| s.send(data) } }
+              EM.next_tick{ ws.send(data) }
               sleep 5
             end
           end
 
           ws.onclose do
-            settings.sockets[:workers].delete(ws)
             Thread.kill(tid)
           end
         end
