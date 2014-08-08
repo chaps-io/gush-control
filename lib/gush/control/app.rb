@@ -3,6 +3,7 @@ require "sidekiq/api"
 module Gush
   module Control
     class App < Sinatra::Base
+      enable :logging
       set :server, :thin
       set :client, proc { Gush::Client.new }
 
