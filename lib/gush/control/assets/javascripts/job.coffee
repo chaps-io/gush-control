@@ -11,7 +11,10 @@ class @Job
     !!@data.running
 
   isWaiting: ->
-    !@isRunning() && !@isFailed()
+    !@isEnqueued() && !@isRunning() && !@isFailed()
+
+  isEnqueued: ->
+    !!@data.enqueued
 
   status: ->
     switch
@@ -19,6 +22,8 @@ class @Job
         "Finished"
       when @isFailed()
         "Failed"
+      when @isEnqueued()
+        "Enqueued"
       when @isRunning()
         "Running"
       else

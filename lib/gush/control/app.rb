@@ -99,7 +99,13 @@ module Gush
 
         @workflow.nodes.each do |node|
           name = node.class.to_s
-          @nodes << {name: name, finished: node.finished?, running: node.running?, failed: node.failed?}
+          @nodes << {
+            name:     name,
+            finished: node.finished?,
+            running:  node.running?,
+            enqueued: node.enqueued?,
+            failed:   node.failed?
+          }
 
           if node.incoming.empty?
             @links << {source: "Start", target: name, type: "flow"}

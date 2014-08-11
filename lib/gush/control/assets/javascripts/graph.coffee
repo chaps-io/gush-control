@@ -9,6 +9,7 @@ class @Graph
         finished: node.finished,
         failed: node.failed,
         running: node.running,
+        enqueued: node.enqueued
         label: node.name
 
     links.forEach (edge) =>
@@ -33,6 +34,8 @@ class @Graph
           classes += " status-failed";
         if node.running
           classes += " status-running";
+        if node.enqueued
+          classes += " status-enqueued"
         classes;
 
       svgNodes;
