@@ -44,9 +44,14 @@ text {
   fill: #7f7;
 }
 
-.node.status-running rect {
+.node.status-enqueued rect {
   stroke: yellow;
   fill: yellow;
+}
+
+.node.status-running rect {
+  stroke: lightblue;
+  fill: lightblue;
 }
 
 .edgeLabel rect {

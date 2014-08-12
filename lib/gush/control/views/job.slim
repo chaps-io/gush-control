@@ -4,6 +4,8 @@
       - case
       - when @job.failed?
         span.label.alert Failed
+      - when @job.enqueued?
+        span.label.secondary Enqueued
       - when @job.running?
         span.label Running
       - when @job.finished?
