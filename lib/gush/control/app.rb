@@ -92,30 +92,30 @@ module Gush
         end
 
         @links = []
-        @nodes = []
-        @nodes << {name: "Start"}
-        @nodes << {name: "End"}
+        @jobs = []
+        @jobs << {name: "Start"}
+        @jobs << {name: "End"}
 
 
-        @workflow.nodes.each do |node|
-          name = node.class.to_s
-          @nodes << {
+        @workflow.jobs.each do |job|
+          name = job.class.to_s
+          @jobs << {
             name:     name,
-            finished: node.finished?,
-            running:  node.running?,
-            enqueued: node.enqueued?,
-            failed:   node.failed?
+            finished: job.finished?,
+            running:  job.running?,
+            enqueued: job.enqueued?,
+            failed:   job.failed?
           }
 
-          if node.incoming.empty?
+          if job.incoming.empty?
             @links << {source: "Start", target: name, type: "flow"}
           end
 
-          node.outgoing.each do |out|
+          job.outgoing.each do |out|
             @links << {source: name, target: out, type: "flow"}
           end
 
-          if node.outgoing.empty?
+          if job.outgoing.empty?
             @links << {source: name, target: "End", type: "flow"}
           end
         end
