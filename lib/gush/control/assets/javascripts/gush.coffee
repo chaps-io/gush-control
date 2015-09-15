@@ -19,10 +19,10 @@ class @Gush
       @_addWorkflow(workflow)
 
   displayJobsOverview: ->
-    if nodes?
-      nodes.each (node) ->
-        job = new Job(node)
-        $("table.nodes tbody").append(job.render())
+    if jobs?
+      jobs.each (job) ->
+        j = new Job(job)
+        $("table.jobs tbody").append(j.render())
 
   registerWorkersSocket: ->
     workersSocket = new WebSocket(@_socketUrl("subscribe/workers.status"))
@@ -104,9 +104,9 @@ class @Gush
       url: "/show/#{workflow_id}.json",
       type: "GET",
       success: (response) =>
-        response.nodes.each (node) =>
-          if node.failed
-            @startJob(workflow_id, node.name, null)
+        response.jobs.each (job) =>
+          if job.failed
+            @startJob(workflow_id, job.name, null)
 
   createWorkflow: (workflow) ->
     $.ajax
@@ -221,15 +221,15 @@ class @Gush
         console.log(response)
       success: (response) =>
         graph = new Graph("canvas-#{workflow_id}")
-        response.nodes.each (node) ->
+        response.jobs.each (job) ->
           klasses = switch
-            when node.failed then "status-finished status-failed"
-            when node.finished then "status-finished"
-            when node.enqueued then "status-running"
-          graph.markNode(node.name, klasses)
+            when job.failed then "status-finished status-failed"
+            when job.finished then "status-finished"
+            when job.enqueued then "status-running"
+          graph.markNode(job.name, klasses)
 
   _updateJobStatus: (name, status) ->
-    $(".nodes tbody").find("td:contains('#{name}')").next("td").html(status).parent().removeClass().addClass(status.toLowerCase())
+    $(".jobs tbody").find("td:contains('#{name}')").next("td").html(status).parent().removeClass().addClass(status.toLowerCase())
 
   _socketUrl: (path) ->
     "ws://#{window.location.host}/#{path}"

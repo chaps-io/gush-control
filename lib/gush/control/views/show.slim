@@ -43,7 +43,7 @@
         a Failed
       dd
         a Finished
-    table.nodes
+    table.jobs
       thead
         th Name
         th Status
@@ -52,11 +52,11 @@
       tbody
 
 script
-  == "var nodes = #{JSON.dump(@nodes)};"
+  == "var jobs = #{JSON.dump(@jobs)};"
   == "var links = #{JSON.dump(@links)};"
 
 javascript:
 
   graph = new Graph("canvas-#{@workflow.id}")
-  graph.populate(nodes, links)
+  graph.populate(jobs, links)
   graph.render()
