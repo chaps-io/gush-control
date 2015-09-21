@@ -86,10 +86,6 @@ module Gush
       get "/show/:workflow.?:format?" do |id, format|
         @workflow = settings.client.find_workflow(id)
 
-        if format == "json"
-          content_type :json
-          return @workflow.to_json
-        end
 
         @links = []
         @jobs = []
@@ -119,10 +115,17 @@ module Gush
             @links << {source: name, target: "End", type: "flow"}
           end
         end
+
+        if format == "json"
+          content_type :json
+          return { jobs: @jobs, links: @links }.to_json
+        end
+
         slim :show
       end
 
-      post "/start/:workflow/?:job?" do |workflow, job|
+      post "/start/:workflow/?:job?" do |id, job|
+        workflow = settings.client.find_workflow(id)
         settings.client.start_workflow(workflow, Array(job))
         content_type :json
         workflow.to_json
