@@ -28,13 +28,13 @@ class @Graph
       svgNodes.attr "class", (name) =>
         node = @digraph.node(name)
         classes = "node " + name.replace(/::/g, '_').toLowerCase()
-        if node.finished
-          classes += " status-finished";
         if node.failed
           classes += " status-failed";
-        if node.running
+        else if node.finished
+          classes += " status-finished";
+        else if node.running
           classes += " status-running";
-        if node.enqueued
+        else if node.enqueued
           classes += " status-enqueued"
         classes;
 
