@@ -18,11 +18,25 @@ class @Gush
     ($("table.workflows").data("workflows") || []).each (workflow) =>
       @_addWorkflow(workflow)
 
+  filterJobs: (filter) ->
+    table = $("table.jobs tbody")
+
+    table.find("tr").hide()
+    if filter == "all"
+      table.find("tr").show()
+    else
+      table.find("tr.#{filter}").show()
+
+  refreshJobList: ->
+    filter = $('.jobs-filter dd.active a').data('filter')
+    @filterJobs(filter)
+
   displayJobsOverview: ->
     if jobs?
       jobs.each (job) ->
         j = new Job(job)
         $("table.jobs tbody").append(j.render())
+      @refreshJobList()
 
   registerWorkersSocket: ->
     workersSocket = new WebSocket(@_socketUrl("subscribe/workers.status"))
@@ -168,6 +182,7 @@ class @Gush
       else
         console.error("Unkown job status:", message.status, "data: ", message)
 
+
   _onWorkflowStatusChange: (message) =>
     message = JSON.parse(message.data)
     workflow = @workflows[message.workflow_id]
@@ -230,6 +245,7 @@ class @Gush
 
   _updateJobStatus: (name, status) ->
     $(".jobs tbody").find("td:contains('#{name}')").next("td").html(status).parent().removeClass().addClass(status.toLowerCase())
+    @refreshJobList()
 
   _socketUrl: (path) ->
     "ws://#{window.location.host}/#{path}"

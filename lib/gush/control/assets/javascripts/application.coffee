@@ -1,4 +1,5 @@
 window.Gush = new Gush
+
 $(document).ready ->
   window.Gush.initialize()
   Foundation.global.namespace = ''
@@ -38,17 +39,11 @@ $(document).ready ->
 
   $(this).on "click", ".jobs-filter dd a", (event) ->
     event.preventDefault()
-    filter = $(this).html().toLowerCase()
-    table = $("table.nodes tbody")
-
+    filter = $(this).data('filter')
     $(this).closest('dl').find('dd').removeClass('active')
     $(this).parent().addClass('active')
+    Gush.filterJobs(filter)
 
-    table.find("tr").hide()
-    if filter == "all"
-      table.find("tr").show()
-    else
-      table.find("tr.#{filter}").show()
 
   $(this).on "click", "a.remove-completed", (event) ->
     event.preventDefault()
