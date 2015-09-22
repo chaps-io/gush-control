@@ -3,10 +3,10 @@ class @Gush
     @workflows = {}
     @machines = {}
 
-  initialize: ->
+  initialize: (jobs) ->
     @registerSockets()
     @displayCurrentWorkflows()
-    @displayJobsOverview()
+    @displayJobsOverview(jobs)
 
   registerSockets: ->
     @registerWorkersSocket()
@@ -31,8 +31,9 @@ class @Gush
     filter = $('.jobs-filter dd.active a').data('filter')
     @filterJobs(filter)
 
-  displayJobsOverview: ->
+  displayJobsOverview: (jobs) ->
     if jobs?
+      $("table.jobs tbody").html("")
       jobs.each (job) ->
         j = new Job(job)
         $("table.jobs tbody").append(j.render())
@@ -170,6 +171,7 @@ class @Gush
 
   _onStatus: (message) =>
     message = JSON.parse(message.data)
+    console.log message
     switch message.status
       when "started"
         @_onJobStart(message)
@@ -200,11 +202,9 @@ class @Gush
 
   _onJobStart: (message) =>
     @_updateGraphStatus(message.workflow_id)
-    @_updateJobStatus(message.job, "Running")
 
   _onJobSuccess: (message) =>
     @_updateGraphStatus(message.workflow_id)
-    @_updateJobStatus(message.job, "Finished")
 
     workflow = @workflows[message.workflow_id]
     if workflow
@@ -215,7 +215,6 @@ class @Gush
 
   _onJobFail: (message) =>
     @_updateGraphStatus(message.workflow_id)
-    @_updateJobStatus(message.job, "Failed")
 
     workflow = @workflows[message.workflow_id]
     if workflow
@@ -236,16 +235,13 @@ class @Gush
         console.log(response)
       success: (response) =>
         graph = new Graph("canvas-#{workflow_id}")
+        @displayJobsOverview(response.jobs)
         response.jobs.each (job) ->
           klasses = switch
             when job.failed then "status-finished status-failed"
             when job.finished then "status-finished"
-            when job.enqueued then "status-running"
+            when job.enqueued then "status-enqueued"
           graph.markNode(job.name, klasses)
-
-  _updateJobStatus: (name, status) ->
-    $(".jobs tbody").find("td:contains('#{name}')").next("td").html(status).parent().removeClass().addClass(status.toLowerCase())
-    @refreshJobList()
 
   _socketUrl: (path) ->
     "ws://#{window.location.host}/#{path}"

@@ -33,4 +33,11 @@ class @Job
     @data.hasOwnProperty("finished")
 
   render: ->
-    Templates.job({name: @data.name, status: @status(), class: @status().toLowerCase()} ) if @isValid()
+    if @isValid()
+      Templates.job
+        name: @data.name
+        started_at: @data.started_at
+        finished_at: @data.finished_at
+        status: @status()
+        class: @status().toLowerCase()
+

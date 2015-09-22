@@ -96,11 +96,13 @@ module Gush
         @workflow.jobs.each do |job|
           name = job.class.to_s
           @jobs << {
-            name:     name,
-            finished: job.finished?,
-            running:  job.running?,
-            enqueued: job.enqueued?,
-            failed:   job.failed?
+            name:         name,
+            finished:     job.finished?,
+            started_at:   format_time(job.started_at),
+            finished_at:  format_time(job.finished_at),
+            running:      job.running?,
+            enqueued:     job.enqueued?,
+            failed:       job.failed?
           }
 
           if job.incoming.empty?
@@ -166,6 +168,10 @@ module Gush
 
       def redis
         Thread.current[:redis] ||= Redis.new(url: settings.client.configuration.redis_url)
+      end
+
+      def format_time(timestamp)
+        Time.at(timestamp) if timestamp
       end
 
       def remove_workflow_and_logs(workflow)

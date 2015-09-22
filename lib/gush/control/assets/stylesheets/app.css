@@ -45,11 +45,6 @@ text {
 }
 
 .node.status-enqueued rect {
-  stroke: yellow;
-  fill: yellow;
-}
-
-.node.status-running rect {
   stroke: lightblue;
   fill: lightblue;
 }

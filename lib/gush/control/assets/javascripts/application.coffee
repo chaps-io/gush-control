@@ -1,7 +1,7 @@
 window.Gush = new Gush
 
 $(document).ready ->
-  window.Gush.initialize()
+  window.Gush.initialize(jobs)
   Foundation.global.namespace = ''
   $(document).foundation()
 
