@@ -1,6 +1,7 @@
 window.Gush = new Gush
 
 $(document).ready ->
+  jobs = $('#jobs').data('list') || []
   window.Gush.initialize(jobs)
   Foundation.global.namespace = ''
   $(document).foundation()

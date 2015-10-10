@@ -49,11 +49,12 @@
         th Finished at
       tbody
 
-script
-  == "var jobs = #{JSON.dump(@jobs)};"
-  == "var links = #{JSON.dump(@links)};"
+#jobs data-list=JSON.dump(@jobs)
+#links data-list=JSON.dump(@links)
 
 javascript:
+  var jobs = $('#jobs').data('list')
+  var links = $('#links').data('list')
 
   graph = new Graph("canvas-#{@workflow.id}")
   graph.populate(jobs, links)
