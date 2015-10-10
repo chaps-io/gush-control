@@ -9,14 +9,19 @@
         a href="/" Back to list
   .large-4.columns
     br
-    - if !@workflow.started?
-      a.button.split.success.small.radius.start-workflow data-action="start" data-workflow-id=@workflow.id
-        | Start workflow
-        span data-dropdown="drop"
-    - else
-      a.button.split.alert.small.radius.start-workflow data-action="stop" data-workflow-id=@workflow.id
-        | Stop workflow
-        span data-dropdown="drop"
+    ul.button-group
+      li
+        - if !@workflow.started?
+          a.button.success.small.start-workflow data-action="start" data-workflow-id=@workflow.id
+            | Start workflow
+        - elsif !@workflow.finished?
+          a.button.alert.small.start-workflow data-action="stop" data-workflow-id=@workflow.id
+            | Stop workflow
+      li
+        a.button.dropdown.small data-dropdown="drop"
+          | Options
+          span data-dropdown="drop"
+
     ul#drop.f-dropdown data-dropdown-content=true
       li
         a.retry-workflow data-workflow-id=@workflow.id href="#" Restart failed jobs
