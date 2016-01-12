@@ -89,14 +89,14 @@ module Gush
 
         @links = []
         @jobs = []
-        @jobs << {name: "Start"}
-        @jobs << {name: "End"}
+        @jobs << {name: "Start", klass: "Start"}
+        @jobs << {name: "End", klass: "End"}
 
 
         @workflow.jobs.each do |job|
-          name = job.class.to_s
           @jobs << {
-            name:         name,
+            name:         job.name,
+            klass:        job.class.to_s,
             finished:     job.finished?,
             started_at:   format_time(job.started_at),
             finished_at:  format_time(job.finished_at),
@@ -106,15 +106,15 @@ module Gush
           }
 
           if job.incoming.empty?
-            @links << {source: "Start", target: name, type: "flow"}
+            @links << {source: "Start", target: job.name, type: "flow"}
           end
 
           job.outgoing.each do |out|
-            @links << {source: name, target: out, type: "flow"}
+            @links << {source: job.name, target: out, type: "flow"}
           end
 
           if job.outgoing.empty?
-            @links << {source: name, target: "End", type: "flow"}
+            @links << {source: job.name, target: "End", type: "flow"}
           end
         end
 

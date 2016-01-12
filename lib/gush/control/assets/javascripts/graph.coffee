@@ -10,7 +10,7 @@ class @Graph
         failed: node.failed,
         running: node.running,
         enqueued: node.enqueued
-        label: node.name
+        label: node.klass
 
     links.forEach (edge) =>
       @digraph.addEdge(null, edge.source, edge.target)
