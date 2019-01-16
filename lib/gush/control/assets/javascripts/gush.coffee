@@ -4,7 +4,6 @@ class @Gush
     @machines = {}
 
   initialize: (jobs) ->
-    @registerSockets()
     @displayCurrentWorkflows()
     @displayJobsOverview(jobs)
 
