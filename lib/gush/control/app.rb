@@ -1,4 +1,5 @@
 require "sidekiq/api"
+require "sprockets"
 
 module Gush
   module Control
