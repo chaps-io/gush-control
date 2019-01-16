@@ -1,4 +1,5 @@
 require "sidekiq/api"
+require "sprockets"
 
 module Gush
   module Control
@@ -12,6 +13,12 @@ module Gush
       environment.append_path "assets/javascripts"
       environment.js_compressor  = :uglify
       environment.css_compressor = :scss
+
+      helpers do
+        def app_prefix
+          request.fullpath[0...-request.path_info.size]
+        end
+      end
 
       get %r{/(js|css)/.+} do |asset_type|
         env["PATH_INFO"].sub!("/#{asset_type}", "")

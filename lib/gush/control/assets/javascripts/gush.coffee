@@ -4,6 +4,7 @@ class @Gush
     @machines = {}
 
   initialize: (jobs) ->
+    @appPrefix = $('body').data('app-prefix')
     @registerSockets()
     @displayCurrentWorkflows()
     @displayJobsOverview(jobs)
