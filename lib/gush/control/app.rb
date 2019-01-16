@@ -15,8 +15,8 @@ module Gush
       environment.css_compressor = :scss
 
       helpers do
-        def asset_path(relative_path)
-          request.fullpath[0...-request.path_info.size] + relative_path
+        def app_prefix
+          request.fullpath[0...-request.path_info.size]
         end
       end
 
