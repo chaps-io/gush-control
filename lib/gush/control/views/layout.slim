@@ -4,12 +4,12 @@ html
     title Gush control
     script type="text/javascript" src="#{app_prefix}/js/index.js"
     link type="text/css" rel="stylesheet" href="#{app_prefix}/css/index.css"
-  body
+  body data-app-prefix=app_prefix
     nav class="top-bar fixed" data-topbar=true
       ul class="title-area"
         li class="name"
           h1
-            a href="/" Gush
+            a href="#{app_prefix}/" Gush
         li class="toggle-topbar menu-icon"
           a href="#"
             span Menu
@@ -36,8 +36,10 @@ html
     script id="workflow-template" type="x-tmpl-mustache"
       tr id="{{id}}" data-name="{{name}}" data-finished="{{finished}}" data-total="{{total}}"
         td
-          a href="/show/{{id}}"
+          a href="#{app_prefix}/show/{{id}}"
             | {{id}}
+        td
+          | {{arguments}}
         td
           | {{name}}
         td.progress-container

@@ -17,7 +17,7 @@
       small = @workflow.id
       '
       small
-        a href="/show/#{@workflow.id}" Back to workflow
+        a href="#{app_prefix}/show/#{@workflow.id}" Back to workflow
   .large-4.columns
     br
     a.button.alert.small.radius.remove-logs data-workflow-id=@workflow.id data-job-name=@job.name

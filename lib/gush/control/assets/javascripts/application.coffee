@@ -36,7 +36,7 @@ $(document).ready ->
     workflow_id = $(this).closest('svg').data('workflow-id')
     name = $(this).data('job-name')
     if name isnt "Start" and name isnt "End"
-      window.location.href = "/jobs/#{workflow_id}.#{name}"
+      window.location.href = "#{Gush.appPrefix}/jobs/#{workflow_id}.#{name}"
 
   $(this).on "click", ".jobs-filter dd a", (event) ->
     event.preventDefault()
