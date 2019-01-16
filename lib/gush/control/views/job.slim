@@ -4,12 +4,12 @@
       - case
       - when @job.failed?
         span.label.alert Failed
-      - when @job.enqueued?
-        span.label.secondary Enqueued
-      - when @job.running?
-        span.label Running
       - when @job.finished?
         span.label.success Finished
+      - when @job.running?
+        span.label Running
+      - when @job.enqueued?
+        span.label.secondary Enqueued
       - else
         span.label.secondary Pending
       = @job.name
