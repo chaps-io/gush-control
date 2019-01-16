@@ -2,10 +2,12 @@ class @Gush
   constructor: ->
     @workflows = {}
     @machines = {}
-    body = document.querySelector('body')
-    console.log(body)
-    @appPrefix = $('body')[0].dataset.appPrefix
-    console.log(@appPrefix)
+    document.addEventListener('DOMContentLoaded', (event) => {
+      @body = $('body')
+      console.log(@body)
+      @appPrefix = @body.data('app-prefix')
+      console.log(@appPrefix)      
+    })
 
   initialize: (jobs) ->
     @registerSockets()
