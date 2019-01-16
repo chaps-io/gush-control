@@ -2,8 +2,8 @@ class @Gush
   constructor: ->
     @workflows = {}
     @machines = {}
-    console.log($('body'))
-    console.log($('body')[0].dataset)
+    body = document.querySelector('body')
+    console.log(body)
     @appPrefix = $('body')[0].dataset.appPrefix
     console.log(@appPrefix)
 
