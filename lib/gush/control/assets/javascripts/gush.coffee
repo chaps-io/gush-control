@@ -2,7 +2,9 @@ class @Gush
   constructor: ->
     @workflows = {}
     @machines = {}
-    @appPrefix = $('body').data('app-prefix')
+    console.log($('body'))
+    console.log($('body')[0].dataset)
+    @appPrefix = $('body')[0].dataset.appPrefix
     console.log(@appPrefix)
 
   initialize: (jobs) ->
