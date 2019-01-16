@@ -19,13 +19,13 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "sinatra"
-  spec.add_runtime_dependency "sinatra-assetpack"
   spec.add_runtime_dependency "thin"
   spec.add_runtime_dependency "tilt"
   spec.add_runtime_dependency "gush"
   spec.add_runtime_dependency "slim"
   spec.add_runtime_dependency "coffee-script"
   spec.add_runtime_dependency "sinatra-websocket"
+  spec.add_runtime_dependency "sprockets"
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
