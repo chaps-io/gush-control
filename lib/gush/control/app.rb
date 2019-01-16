@@ -14,6 +14,12 @@ module Gush
       environment.js_compressor  = :uglify
       environment.css_compressor = :scss
 
+      helpers do
+        def asset_path(relative_path)
+          request.fullpath[0...-request.path_info.size] + relative_path
+        end
+      end
+
       get %r{/(js|css)/.+} do |asset_type|
         env["PATH_INFO"].sub!("/#{asset_type}", "")
         settings.environment.call(env)
