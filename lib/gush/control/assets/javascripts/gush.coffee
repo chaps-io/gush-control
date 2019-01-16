@@ -3,6 +3,7 @@ class @Gush
     @workflows = {}
     @machines = {}
     @appPrefix = $('body').data('app-prefix')
+    console.log(@appPrefix)
 
   initialize: (jobs) ->
     @registerSockets()
