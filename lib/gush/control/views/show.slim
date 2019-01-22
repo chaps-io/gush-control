@@ -3,10 +3,11 @@
     h1.workflow-title
       = @workflow.class
       '
-      small = @workflow.id
+      small = @workflow.id    
       '
       small
-        a href="/" Back to list
+        a href="#{app_prefix}/" Back to list
+  .h6= @workflow.arguments
   .large-4.columns
     br
     ul.button-group
