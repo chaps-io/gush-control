@@ -1,4 +1,5 @@
 require "sidekiq/api"
+require "sprockets"
 
 module Gush
   module Control
@@ -6,14 +7,23 @@ module Gush
       enable :logging
       set :server, :thin
       set :client, proc { Gush::Client.new }
+      set :environment, Sprockets::Environment.new(File.dirname(__FILE__))
 
-      register Sinatra::AssetPack
+      environment.append_path "assets/stylesheets"
+      environment.append_path "assets/javascripts"
+      environment.js_compressor  = :uglify
+      environment.css_compressor = :scss
 
-      assets {
-        serve '/js',     from: 'assets/javascripts'
-        serve '/css',    from: 'assets/stylesheets'
-        serve '/images', from: 'assets/images'
-      }
+      helpers do
+        def app_prefix
+          request.fullpath[0...-request.path_info.size]
+        end
+      end
+
+      get %r{/(js|css)/.+} do |asset_type|
+        env["PATH_INFO"].sub!("/#{asset_type}", "")
+        settings.environment.call(env)
+      end
 
       get "/" do
         @workflows = settings.client.all_workflows
